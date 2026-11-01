@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="M&N Bilverkstad i Bromma – bilservice, reparationer och bilvård.">
+  <title>Hem | M&N Bilverkstad</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav-wrap">
+    <a class="logo" href="index.html">M&N <span>Bilverkstad</span></a>
+    <button class="menu-toggle" aria-label="Öppna meny" aria-expanded="false">☰</button>
+    <nav class="main-nav">
+      <a class="active" href="index.html">Hem</a>
+      <a href="about.html">Om oss</a>
+      <a href="services.html">Tjänster</a>
+      <a href="work.html">Vårt arbete</a>
+      <a href="contact.html">Kontakt</a>
+      <a class="nav-cta" href="booking.html">Boka tid</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero">
+    <div class="container hero-content">
+      <p class="eyebrow">BILVERKSTAD I BROMMA</p>
+      <h1>Vi tar hand om<br>din bil.</h1>
+      <p>Pålitlig bilservice, reparationer och bilvård med personlig service.</p>
+      <div class="hero-actions">
+        <a class="button" href="booking.html">Boka en tid</a>
+        <a class="button button-outline" href="services.html">Se våra tjänster</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INFORMATION FRÅN ADMINPANELEN -->
+  <section class="section workshop-information" id="workshopInformation" hidden>
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">SENASTE NYTT</p>
+        <h2>Information från verkstaden</h2>
+        <p>Här hittar du aktuell information från M&N Bilverkstad.</p>
+      </div>
+
+      <div id="publicAnnouncementList" class="announcement-list"></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading">
+        <p class="eyebrow">VÄLKOMMEN TILL M&N</p>
+        <h2>Service du kan känna dig trygg med</h2>
+        <p>Vi hjälper dig med bilens underhåll och reparationer. Kontakta oss för att prata om vad just din bil behöver.</p>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon">⚙</div>
+          <h3>Bilreparation</h3>
+          <p>Hjälp med felsökning och reparation av bilen.</p>
+          <a href="services.html">Läs mer →</a>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">⌁</div>
+          <h3>Service & oljebyte</h3>
+          <p>Regelbunden service och oljebyte för din bil.</p>
+          <a href="services.html">Läs mer →</a>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">✓</div>
+          <h3>Diagnostik</h3>
+          <p>Felkodsavläsning och kontroll vid bilproblem.</p>
+          <a href="services.html">Läs mer →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="container cta-content">
+      <div>
+        <p class="eyebrow">BEHÖVER DIN BIL HJÄLP?</p>
+        <h2>Vi hjälper dig gärna.</h2>
+      </div>
+      <a class="button" href="booking.html">Boka tid</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>© <span class="year"></span> M&N Bilverkstad</p>
+    <p>Bromma, Stockholm</p>
+  </div>
+</footer>
+
+</body>
+</html>
