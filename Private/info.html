@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Senaste informationen och nyheterna från M&N Bilverkstad i Bromma.">
+  <title>Information | M&N Bilverkstad</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .info-page {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 60px 20px;
+      min-height: 65vh;
+    }
+
+    .info-heading {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .info-heading h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin-bottom: 12px;
+    }
+
+    .info-heading p {
+      color: #888;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 22px;
+    }
+
+    .info-card {
+      background: var(--card-bg, #fff);
+      color: var(--text-color, #222);
+      border: 1px solid var(--border-color, #ddd);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+
+    .info-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 12px;
+    }
+
+    .info-card p {
+      line-height: 1.7;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .info-date {
+      display: block;
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .info-status {
+      text-align: center;
+      padding: 35px 15px;
+      color: #888;
+    }
+
+    .info-error {
+      color: #b42318;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <a href="index.html" class="logo">M&N Bilverkstad</a>
+
+      <ul class="nav-links">
+        <li><a href="index.html">Hem</a></li>
+        <li><a href="about.html">Om oss</a></li>
+        <li><a href="services.html">Tjänster</a></li>
+        <li><a href="work.html">Vårt arbete</a></li>
+        <li><a href="info.html" aria-current="page">Information</a></li>
+        <li><a href="contact.html">Kontakt</a></li>
+        <li><a href="booking.html">Boka tid</a></li>
+      </ul>
+
+      <button class="menu-toggle" aria-label="Öppna meny">
+        ☰
+      </button>
+    </nav>
+  </header>
+
+  <main class="info-page">
+    <section class="info-heading">
+      <h1>Information & Nyheter</h1>
+      <p>Här hittar du de senaste uppdateringarna från M&N Bilverkstad.</p>
+    </section>
+
+    <section id="announcementList" class="info-list" aria-live="polite">
+      <p class="info-status">Hämtar information...</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      © <span id="year"></span> M&N Bilverkstad.
+      Alla rättigheter förbehållna.
+    </p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL =
+      "https://cxjbgazjgzjzliipbmft.supabase.co";
+
+    const SUPABASE_ANON_KEY =
+      "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
+
+    const client = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const list = document.getElementById("announcementList");
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    async function loadAnnouncements() {
+      list.innerHTML =
+        '<p class="info-status">Hämtar information...</p>';
+
+      const { data, error } = await client
+        .from("announcements")
+        .select("id, title, body, created_at, visible_until")
+        .or("visible_until.is.null,visible_until.gte." +
+          new Date().toISOString().slice(0, 10))
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Supabase error:", error);
+
+        list.innerHTML =
+          '<p class="info-status info-error">' +
+          'Kunde inte hämta information just nu. Försök igen senare.' +
+          '</p>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        list.innerHTML =
+          '<p class="info-status">' +
+          'Det finns ingen publicerad information just nu.' +
+          '</p>';
+        return;
+      }
+
+      list.innerHTML = "";
+
+      data.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "info-card";
+
+        const heading = document.createElement("h2");
+        heading.textContent = item.title;
+
+        const body = document.createElement("p");
+        body.textContent = item.body;
+
+        const date = document.createElement("span");
+        date.className = "info-date";
+
+        date.textContent = "Publicerad: " +
+          new Date(item.created_at).toLocaleDateString("sv-SE");
+
+        card.appendChild(heading);
+        card.appendChild(body);
+        card.appendChild(date);
+
+        list.appendChild(card);
+      });
+    }
+
+    loadAnnouncements();
+  </script>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
