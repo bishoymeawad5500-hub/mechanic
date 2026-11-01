@@ -1,20 +1,38 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Boka tid | M&N Bilverkstad</title>
+
   <link rel="stylesheet" href="style.css">
+
+  <!-- Supabase måste laddas före script.js -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    defer>
+  </script>
+
   <script src="script.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
+
 <header class="site-header">
   <div class="container nav-wrap">
-    <a class="logo" href="index.html">M&N <span>Bilverkstad</span></a>
-    <button class="menu-toggle" aria-label="Öppna meny" aria-expanded="false">☰</button>
+
+    <a class="logo" href="index.html">
+      M&N <span>Bilverkstad</span>
+    </a>
+
+    <button
+      class="menu-toggle"
+      aria-label="Öppna meny"
+      aria-expanded="false">
+      ☰
+    </button>
+
     <nav class="main-nav">
       <a href="index.html">Hem</a>
       <a href="about.html">Om oss</a>
@@ -23,215 +41,205 @@
       <a href="contact.html">Kontakt</a>
       <a class="nav-cta active" href="booking.html">Boka tid</a>
     </nav>
+
   </div>
 </header>
 
 <main>
+
   <section class="page-hero">
     <div class="container">
+
       <p class="eyebrow">BOKNINGSFÖRFRÅGAN</p>
+
       <h1>Boka en tid</h1>
-      <p>Välj tjänst, datum och en tid som passar dig.</p>
+
+      <p>
+        Välj tjänst, datum och en tid som passar dig.
+      </p>
+
     </div>
   </section>
 
   <section class="section">
+
     <div class="container booking-layout">
 
       <form class="booking-form" id="bookingForm">
+
         <div class="form-grid">
 
           <div>
             <label for="name">Namn *</label>
-            <input id="name" name="name" autocomplete="name" required>
+
+            <input
+              id="name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required>
           </div>
 
           <div>
             <label for="phone">Telefon *</label>
-            <input id="phone" name="phone" type="tel" autocomplete="tel" required>
+
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              autocomplete="tel"
+              required>
           </div>
 
           <div>
             <label for="email">E-post</label>
-            <input id="email" name="email" type="email" autocomplete="email">
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email">
           </div>
 
           <div>
             <label for="car">Bilmodell och årsmodell</label>
-            <input id="car" name="car" placeholder="Ex. Volvo V60, 2019">
+
+            <input
+              id="car"
+              name="car"
+              type="text"
+              placeholder="Ex. Volvo V60, 2019">
           </div>
 
           <div>
-            <label for="service">Vad behöver du hjälp med? *</label>
-            <select id="service" name="service" required>
+            <label for="service">
+              Vad behöver du hjälp med? *
+            </label>
+
+            <select
+              id="service"
+              name="service"
+              required>
+
               <option value="">Välj tjänst</option>
-              <option>Motorreparation</option>
-              <option>Oljebyte</option>
-              <option>Diagnostik</option>
-              <option>Bromsar</option>
-              <option>Däckbyte</option>
-              <option>Bilvård / rekond</option>
-              <option>Annat</option>
+              <option value="Motorreparation">Motorreparation</option>
+              <option value="Oljebyte">Oljebyte</option>
+              <option value="Diagnostik">Diagnostik</option>
+              <option value="Bromsar">Bromsar</option>
+              <option value="Däckbyte">Däckbyte</option>
+              <option value="Bilvård / rekond">Bilvård / rekond</option>
+              <option value="Annat">Annat</option>
+
             </select>
           </div>
 
           <div>
             <label for="date">Önskat datum *</label>
-            <input id="date" name="date" type="date" required>
+
+            <input
+              id="date"
+              name="date"
+              type="date"
+              required>
           </div>
 
           <div>
             <label for="time">Välj tid *</label>
-            <select id="time" name="time" required>
+
+            <select
+              id="time"
+              name="time"
+              required>
+
               <option value="">Välj först ett datum</option>
+
             </select>
           </div>
+
         </div>
 
-        <label for="message">Meddelande</label>
-        <textarea id="message" name="message" rows="5"
-          placeholder="Beskriv gärna vad du behöver hjälp med."></textarea>
+        <div>
+          <label for="message">Meddelande</label>
 
-        <button class="button" id="submitButton" type="submit">
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Beskriv gärna vad du behöver hjälp med.">
+          </textarea>
+        </div>
+
+        <button
+          class="button"
+          id="submitButton"
+          type="submit">
           Skicka bokning
         </button>
 
-        <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+        <p
+          id="formMessage"
+          class="form-message"
+          role="status"
+          aria-live="polite">
+        </p>
 
         <p class="small-note">
-          Din bokning är en förfrågan och är inte bekräftad förrän verkstaden har svarat.
+          Din bokning är en förfrågan och är inte bekräftad
+          förrän verkstaden har svarat.
         </p>
+
       </form>
 
       <aside class="booking-aside">
-        <p class="eyebrow">HAR DU FRÅGOR?</p>
-        <h2>Kontakta verkstaden</h2>
-        <p>Du kan också ringa eller mejla oss direkt.</p>
 
-        <p><strong>Telefon</strong><br>
-          <a href="tel:0769010948">076-901 09 48</a>
+        <p class="eyebrow">HAR DU FRÅGOR?</p>
+
+        <h2>Kontakta verkstaden</h2>
+
+        <p>
+          Du kan också ringa eller mejla oss direkt.
         </p>
 
-        <p><strong>E-post</strong><br>
+        <p>
+          <strong>Telefon</strong><br>
+          <a href="tel:0769010948">
+            076-901 09 48
+          </a>
+        </p>
+
+        <p>
+          <strong>E-post</strong><br>
           <a href="mailto:bilservicebromma@gmail.com">
             bilservicebromma@gmail.com
           </a>
         </p>
 
-        <p><strong>Adress</strong><br>
+        <p>
+          <strong>Adress</strong><br>
           Gjuterivägen 13, 168 67 Bromma
         </p>
+
       </aside>
 
     </div>
+
   </section>
+
 </main>
 
 <footer class="site-footer">
+
   <div class="container footer-inner">
-    <p>© <span class="year"></span> M&N Bilverkstad</p>
+
+    <p>
+      © <span class="year"></span> M&N Bilverkstad
+    </p>
+
     <p>Bromma, Stockholm</p>
+
   </div>
+
 </footer>
-
-<script>
-const SUPABASE_URL = "https://cxjbgazjgzjzliipbmft.supabase.co";
-const SUPABASE_KEY = "DIN_SUPABASE_PUBLISHABLE_KEY";
-
-const client = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-const form = document.getElementById("bookingForm");
-const dateInput = document.getElementById("date");
-const timeSelect = document.getElementById("time");
-const submitButton = document.getElementById("submitButton");
-const formMessage = document.getElementById("formMessage");
-
-// Sätt dagens datum som tidigaste möjliga bokningsdatum.
-const today = new Date();
-const localToday = [
-  today.getFullYear(),
-  String(today.getMonth() + 1).padStart(2, "0"),
-  String(today.getDate()).padStart(2, "0")
-].join("-");
-
-dateInput.min = localToday;
-
-// Tillgängliga starttider med 90 minuters mellanrum.
-const bookingTimes = [
-  "08:00",
-  "09:30",
-  "11:00",
-  "12:30",
-  "14:00",
-  "15:30",
-  "17:00"
-];
-
-dateInput.addEventListener("change", () => {
-  timeSelect.innerHTML = '<option value="">Välj en tid</option>';
-
-  if (!dateInput.value) return;
-
-  bookingTimes.forEach(time => {
-    const option = document.createElement("option");
-    option.value = time;
-    option.textContent = time;
-    timeSelect.appendChild(option);
-  });
-});
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  formMessage.textContent = "";
-  submitButton.disabled = true;
-  submitButton.textContent = "Skickar...";
-
-  const booking = {
-    name: document.getElementById("name").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
-    email: document.getElementById("email").value.trim() || null,
-    car: document.getElementById("car").value.trim() || null,
-    service: document.getElementById("service").value,
-    preferred_date: dateInput.value,
-    preferred_time: timeSelect.value,
-    message: document.getElementById("message").value.trim() || null,
-    status: "Ny"
-  };
-
-  try {
-    const { error } = await client
-      .from("bookings")
-      .insert([booking]);
-
-    if (error) throw error;
-
-    form.reset();
-    timeSelect.innerHTML =
-      '<option value="">Välj först ett datum</option>';
-
-    formMessage.textContent =
-      "Tack för din bokningsförfrågan! Vi har tagit emot den och återkommer till dig.";
-
-    formMessage.style.color = "green";
-
-  } catch (error) {
-    console.error("Bokningsfel:", error);
-
-    formMessage.textContent =
-      "Bokningen kunde inte skickas. Försök igen eller kontakta oss via telefon.";
-
-    formMessage.style.color = "red";
-
-  } finally {
-    submitButton.disabled = false;
-    submitButton.textContent = "Skicka bokning";
-  }
-});
-</script>
 
 </body>
 </html>
