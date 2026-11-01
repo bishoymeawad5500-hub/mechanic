@@ -4,13 +4,14 @@
 // ======================================
 
 const SUPABASE_URL = "https://cxjbgazjgzjzliipbmft.supabase.co";
-const SUPABASE_ANON_KEY = "DIN_SUPABASE_PUBLISHABLE_KEY";
+const SUPABASE_ANON_KEY = "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
 
 let supabaseClient = null;
 
 if (
   window.supabase &&
-  SUPABASE_ANON_KEY !== "DIN_SUPABASE_PUBLISHABLE_KEY"
+  SUPABASE_ANON_KEY &&
+  SUPABASE_ANON_KEY !== "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31"
 ) {
   supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
@@ -18,32 +19,127 @@ if (
   );
 }
 
-// Mobilmeny
+// ======================================
+// GEMENSAMMA FUNKTIONER
+// ======================================
+
+function getTodayInStockholm() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Stockholm",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const values = {};
+  parts.forEach(part => {
+    values[part.type] = part.value;
+  });
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function showMessage(element, message, type = "") {
+  if (!element) return;
+
+  element.textContent = message;
+  element.className = "form-message " + type;
+}
+
+function formatDate(date) {
+  if (!date) return "Ej angivet";
+
+  const parts = date.split("-");
+  if (parts.length !== 3) return date;
+
+  return `${parts[2]}/${parts[1]}/${parts[0]}`;
+}
+
+// ======================================
+// MOBILMENY
+// ======================================
+
 const menuButton = document.querySelector(".menu-toggle");
 const navigation = document.querySelector(".main-nav");
 
 if (menuButton && navigation) {
   menuButton.addEventListener("click", () => {
     const isOpen = navigation.classList.toggle("open");
+
     menuButton.setAttribute("aria-expanded", String(isOpen));
     menuButton.textContent = isOpen ? "×" : "☰";
   });
+
+  navigation.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      navigation.classList.remove("open");
+      menuButton.setAttribute("aria-expanded", "false");
+      menuButton.textContent = "☰";
+    });
+  });
 }
 
-// Årtal i sidfoten
-document.querySelectorAll(".year").forEach((element) => {
+// ======================================
+// ÅRTAL I SIDFOTEN
+// ======================================
+
+document.querySelectorAll(".year").forEach(element => {
   element.textContent = new Date().getFullYear();
 });
 
-// Svenskt datum
-function getTodayInStockholm() {
-  return new Intl.DateTimeFormat("sv-SE", {
-    timeZone: "Europe/Stockholm",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+// ======================================
+// BOKNINGSTIDER
+// ======================================
+
+const BOOKING_TIMES = [
+  "08:00",
+  "09:30",
+  "11:00",
+  "12:30",
+  "14:00",
+  "15:30",
+  "17:00"
+];
+
+function setupBookingTimes() {
+  const dateInput =
+    document.getElementById("preferred_date") ||
+    document.getElementById("date");
+
+  const timeSelect =
+    document.getElementById("preferred_time") ||
+    document.getElementById("time");
+
+  if (!dateInput || !timeSelect) return;
+
+  dateInput.min = getTodayInStockholm();
+
+  function updateTimes() {
+    timeSelect.replaceChildren();
+
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = dateInput.value
+      ? "Välj en tid"
+      : "Välj först ett datum";
+
+    timeSelect.appendChild(firstOption);
+
+    if (!dateInput.value) return;
+
+    BOOKING_TIMES.forEach(time => {
+      const option = document.createElement("option");
+      option.value = time;
+      option.textContent = time;
+      timeSelect.appendChild(option);
+    });
+  }
+
+  dateInput.addEventListener("change", updateTimes);
+  updateTimes();
 }
+
+setupBookingTimes();
 
 // ======================================
 // BOKNINGSFORMULÄR
@@ -52,88 +148,133 @@ function getTodayInStockholm() {
 const bookingForm = document.getElementById("bookingForm");
 
 if (bookingForm) {
-  const submitButton = document.getElementById("bookingSubmit");
+  const submitButton =
+    document.getElementById("bookingSubmit") ||
+    bookingForm.querySelector('[type="submit"]');
+
   const formMessage = document.getElementById("formMessage");
-  const dateInput = document.getElementById("preferred_date");
 
-  function showBookingMessage(message, type = "") {
-    formMessage.textContent = message;
-    formMessage.className = "form-message " + type;
-  }
+  const getInput = (...ids) => {
+    for (const id of ids) {
+      const element = document.getElementById(id);
+      if (element) return element;
+    }
+    return null;
+  };
 
-  if (dateInput) {
-    dateInput.min = getTodayInStockholm();
-  }
-
-  bookingForm.addEventListener("submit", async (event) => {
+  bookingForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     if (!bookingForm.reportValidity()) return;
 
     if (!supabaseClient) {
-      showBookingMessage(
-        "Bokningssystemet är inte anslutet ännu. Kontakta verkstaden direkt.",
+      showMessage(
+        formMessage,
+        "Bokningssystemet är inte anslutet. Kontrollera Supabase-nyckeln.",
         "error"
       );
       return;
     }
 
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const car = document.getElementById("car").value.trim();
-    const service = document.getElementById("service").value;
-    const preferredDate = dateInput.value || null;
-    const message = document.getElementById("message").value.trim();
+    const name = getInput("name")?.value.trim() || "";
+    const phone = getInput("phone")?.value.trim() || "";
+    const email = getInput("email")?.value.trim() || "";
+    const car = getInput("car")?.value.trim() || "";
+    const service = getInput("service")?.value || "";
 
-    if (!name || !phone || !service) {
-      showBookingMessage(
-        "Fyll i alla obligatoriska fält.",
+    const dateInput = getInput("preferred_date", "date");
+    const timeInput = getInput("preferred_time", "time");
+
+    const preferredDate = dateInput?.value || "";
+    const preferredTime = timeInput?.value || "";
+
+    const message = getInput("message")?.value.trim() || "";
+
+    if (!name || !phone || !service || !preferredDate || !preferredTime) {
+      showMessage(
+        formMessage,
+        "Fyll i namn, telefon, tjänst, datum och tid.",
         "error"
       );
       return;
     }
 
-    submitButton.disabled = true;
-    submitButton.textContent = "Skickar...";
+    if (preferredDate < getTodayInStockholm()) {
+      showMessage(
+        formMessage,
+        "Du kan inte välja ett datum som redan har passerat.",
+        "error"
+      );
+      return;
+    }
 
-    showBookingMessage("Skickar din bokningsförfrågan...");
+    if (!BOOKING_TIMES.includes(preferredTime)) {
+      showMessage(
+        formMessage,
+        "Välj en giltig bokningstid.",
+        "error"
+      );
+      return;
+    }
 
-    const { error } = await supabaseClient
-      .from("bookings")
-      .insert({
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Skickar...";
+    }
+
+    showMessage(formMessage, "Skickar din bokningsförfrågan...");
+
+    try {
+      const booking = {
         name,
         phone,
         email: email || null,
         car: car || null,
         service,
         preferred_date: preferredDate,
-        message: message || null
-      });
+        preferred_time: preferredTime,
+        message: message || null,
+        status: "Ny"
+      };
 
-    submitButton.disabled = false;
-    submitButton.textContent = "Skicka bokningsförfrågan";
+      const { error } = await supabaseClient
+        .from("bookings")
+        .insert([booking]);
 
-    if (error) {
-      console.error("Booking error:", error);
+      if (error) throw error;
 
-      showBookingMessage(
-        "Det gick inte att skicka förfrågan. Försök igen eller kontakta verkstaden direkt.",
+      bookingForm.reset();
+
+      if (dateInput) {
+        dateInput.min = getTodayInStockholm();
+      }
+
+      if (timeInput) {
+        timeInput.innerHTML =
+          '<option value="">Välj först ett datum</option>';
+      }
+
+      showMessage(
+        formMessage,
+        "Tack för din bokningsförfrågan! Vi har tagit emot den och återkommer för att bekräfta tiden.",
+        "success"
+      );
+
+    } catch (error) {
+      console.error("Bokningsfel:", error);
+
+      showMessage(
+        formMessage,
+        "Bokningen kunde inte skickas. Försök igen eller kontakta verkstaden direkt.",
         "error"
       );
-      return;
+
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Skicka bokning";
+      }
     }
-
-    bookingForm.reset();
-
-    if (dateInput) {
-      dateInput.min = getTodayInStockholm();
-    }
-
-    showBookingMessage(
-      "Tack! Din bokningsförfrågan har skickats. Verkstaden kontaktar dig för att bekräfta tiden.",
-      "success"
-    );
   });
 }
 
@@ -156,60 +297,58 @@ if (informationSection && announcementList) {
 
     const today = getTodayInStockholm();
 
-    const { data, error } = await supabaseClient
-      .from("announcements")
-      .select("id, title, body, visible_until, created_at")
-      .or(`visible_until.is.null,visible_until.gte.${today}`)
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabaseClient
+        .from("announcements")
+        .select("id, title, body, visible_until, created_at")
+        .or(`visible_until.is.null,visible_until.gte.${today}`)
+        .order("created_at", { ascending: false });
 
-    if (error) {
-      console.error("Announcement error:", error);
-      informationSection.hidden = true;
-      return;
-    }
+      if (error) throw error;
 
-    announcementList.replaceChildren();
+      announcementList.replaceChildren();
 
-    if (!data || data.length === 0) {
-      informationSection.hidden = true;
-      return;
-    }
-
-    data.forEach((announcement) => {
-      const card = document.createElement("article");
-      card.className = "public-announcement";
-
-      const heading = document.createElement("h3");
-      heading.textContent = announcement.title;
-
-      const body = document.createElement("p");
-      body.textContent = announcement.body;
-
-      card.append(heading, body);
-
-      if (announcement.visible_until) {
-        const expiry = document.createElement("p");
-        expiry.className = "announcement-date";
-
-        const parts = announcement.visible_until.split("-");
-        expiry.textContent =
-          "Informationen gäller till och med " +
-          `${parts[2]}/${parts[1]}/${parts[0]}`;
-
-        card.appendChild(expiry);
+      if (!data || data.length === 0) {
+        informationSection.hidden = true;
+        return;
       }
 
-      announcementList.appendChild(card);
-    });
+      data.forEach(announcement => {
+        const card = document.createElement("article");
+        card.className = "public-announcement";
 
-    informationSection.hidden = false;
+        const heading = document.createElement("h3");
+        heading.textContent = announcement.title;
+
+        const body = document.createElement("p");
+        body.textContent = announcement.body;
+
+        card.append(heading, body);
+
+        if (announcement.visible_until) {
+          const expiry = document.createElement("p");
+          expiry.className = "announcement-date";
+          expiry.textContent =
+            "Informationen gäller till och med " +
+            formatDate(announcement.visible_until);
+
+          card.appendChild(expiry);
+        }
+
+        announcementList.appendChild(card);
+      });
+
+      informationSection.hidden = false;
+
+    } catch (error) {
+      console.error("Informationsfel:", error);
+      informationSection.hidden = true;
+    }
   }
 
   loadPublicAnnouncements();
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      loadPublicAnnouncements();
-    }
+    if (!document.hidden) loadPublicAnnouncements();
   });
 }
