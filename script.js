@@ -1,4 +1,3 @@
-
 // ======================================
 // M&N BILVERKSTAD – GEMENSAMT SCRIPT
 // ======================================
@@ -8,15 +7,14 @@ const SUPABASE_ANON_KEY = "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
 
 let supabaseClient = null;
 
-if (
-  window.supabase &&
-  SUPABASE_ANON_KEY &&
-  SUPABASE_ANON_KEY !== "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31"
-) {
+// Skapa Supabase-anslutningen
+if (window.supabase) {
   supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
+} else {
+  console.error("Supabase-biblioteket kunde inte laddas.");
 }
 
 // ======================================
@@ -32,6 +30,7 @@ function getTodayInStockholm() {
   }).formatToParts(new Date());
 
   const values = {};
+
   parts.forEach(part => {
     values[part.type] = part.value;
   });
@@ -50,6 +49,7 @@ function formatDate(date) {
   if (!date) return "Ej angivet";
 
   const parts = date.split("-");
+
   if (parts.length !== 3) return date;
 
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
@@ -129,13 +129,16 @@ function setupBookingTimes() {
 
     BOOKING_TIMES.forEach(time => {
       const option = document.createElement("option");
+
       option.value = time;
       option.textContent = time;
+
       timeSelect.appendChild(option);
     });
   }
 
   dateInput.addEventListener("change", updateTimes);
+
   updateTimes();
 }
 
@@ -149,6 +152,7 @@ const bookingForm = document.getElementById("bookingForm");
 
 if (bookingForm) {
   const submitButton =
+    document.getElementById("submitButton") ||
     document.getElementById("bookingSubmit") ||
     bookingForm.querySelector('[type="submit"]');
 
@@ -157,8 +161,10 @@ if (bookingForm) {
   const getInput = (...ids) => {
     for (const id of ids) {
       const element = document.getElementById(id);
+
       if (element) return element;
     }
+
     return null;
   };
 
@@ -170,9 +176,10 @@ if (bookingForm) {
     if (!supabaseClient) {
       showMessage(
         formMessage,
-        "Bokningssystemet är inte anslutet. Kontrollera Supabase-nyckeln.",
+        "Bokningssystemet kunde inte ansluta. Ladda om sidan och försök igen.",
         "error"
       );
+
       return;
     }
 
@@ -190,12 +197,19 @@ if (bookingForm) {
 
     const message = getInput("message")?.value.trim() || "";
 
-    if (!name || !phone || !service || !preferredDate || !preferredTime) {
+    if (
+      !name ||
+      !phone ||
+      !service ||
+      !preferredDate ||
+      !preferredTime
+    ) {
       showMessage(
         formMessage,
         "Fyll i namn, telefon, tjänst, datum och tid.",
         "error"
       );
+
       return;
     }
 
@@ -205,6 +219,7 @@ if (bookingForm) {
         "Du kan inte välja ett datum som redan har passerat.",
         "error"
       );
+
       return;
     }
 
@@ -214,6 +229,7 @@ if (bookingForm) {
         "Välj en giltig bokningstid.",
         "error"
       );
+
       return;
     }
 
@@ -222,15 +238,18 @@ if (bookingForm) {
       submitButton.textContent = "Skickar...";
     }
 
-    showMessage(formMessage, "Skickar din bokningsförfrågan...");
+    showMessage(
+      formMessage,
+      "Skickar din bokningsförfrågan..."
+    );
 
     try {
       const booking = {
-        name,
-        phone,
+        name: name,
+        phone: phone,
         email: email || null,
         car: car || null,
-        service,
+        service: service,
         preferred_date: preferredDate,
         preferred_time: preferredTime,
         message: message || null,
@@ -241,7 +260,10 @@ if (bookingForm) {
         .from("bookings")
         .insert([booking]);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase-fel:", error);
+        throw error;
+      }
 
       bookingForm.reset();
 
@@ -265,7 +287,7 @@ if (bookingForm) {
 
       showMessage(
         formMessage,
-        "Bokningen kunde inte skickas. Försök igen eller kontakta verkstaden direkt.",
+        "Bokningen kunde inte skickas. Försök igen eller kontakta oss via telefon.",
         "error"
       );
 
@@ -315,6 +337,7 @@ if (informationSection && announcementList) {
 
       data.forEach(announcement => {
         const card = document.createElement("article");
+
         card.className = "public-announcement";
 
         const heading = document.createElement("h3");
@@ -327,7 +350,9 @@ if (informationSection && announcementList) {
 
         if (announcement.visible_until) {
           const expiry = document.createElement("p");
+
           expiry.className = "announcement-date";
+
           expiry.textContent =
             "Informationen gäller till och med " +
             formatDate(announcement.visible_until);
@@ -342,6 +367,7 @@ if (informationSection && announcementList) {
 
     } catch (error) {
       console.error("Informationsfel:", error);
+
       informationSection.hidden = true;
     }
   }
@@ -349,6 +375,8 @@ if (informationSection && announcementList) {
   loadPublicAnnouncements();
 
   document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) loadPublicAnnouncements();
+    if (!document.hidden) {
+      loadPublicAnnouncements();
+    }
   });
 }
