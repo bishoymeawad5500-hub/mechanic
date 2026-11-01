@@ -4,78 +4,315 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Senaste informationen och nyheterna från M&N Bilverkstad i Bromma.">
-  <title>Information | M&N Bilverkstad</title>
+
+  <title>Information & Nyheter | M&N Bilverkstad</title>
+  <meta name="description" content="Läs senaste nyheterna och informationen från M&N Bilverkstad i Bromma.">
+
   <link rel="stylesheet" href="style.css">
 
   <style>
-    .info-page {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 60px 20px;
-      min-height: 65vh;
+    :root {
+      --info-bg: #101114;
+      --info-card: #1b1d22;
+      --info-gold: #d6a94f;
+      --info-text: #f5f5f5;
+      --info-muted: #a4a5aa;
+      --info-border: rgba(255,255,255,0.09);
     }
 
-    .info-heading {
+    body {
+      background: var(--info-bg);
+      color: var(--info-text);
+    }
+
+    .info-hero {
+      position: relative;
+      padding: 100px 20px 85px;
       text-align: center;
-      margin-bottom: 45px;
+      background:
+        radial-gradient(ellipse at 50% 100%, rgba(214,169,79,0.16), transparent 65%),
+        linear-gradient(135deg, #191a1e, #101114);
+      border-bottom: 1px solid var(--info-border);
+      overflow: hidden;
     }
 
-    .info-heading h1 {
-      font-size: clamp(2rem, 5vw, 3rem);
-      margin-bottom: 12px;
+    .info-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.012) 61px,
+        rgba(255,255,255,0.012) 62px
+      );
+      pointer-events: none;
     }
 
-    .info-heading p {
-      color: #888;
+    .hero-content {
+      position: relative;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .hero-label {
+      display: inline-block;
+      color: var(--info-gold);
+      border: 1px solid rgba(214,169,79,0.4);
+      border-radius: 30px;
+      padding: 8px 17px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 23px;
+    }
+
+    .info-hero h1 {
+      font-size: clamp(36px, 6vw, 62px);
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 0 0 20px;
+      letter-spacing: -1.5px;
+    }
+
+    .info-hero h1 span {
+      color: var(--info-gold);
+    }
+
+    .info-hero p {
+      color: var(--info-muted);
+      font-size: 17px;
+      line-height: 1.8;
+      max-width: 570px;
+      margin: auto;
+    }
+
+    .info-main {
+      max-width: 1050px;
+      margin: auto;
+      padding: 75px 22px 100px;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .section-heading h2 {
+      font-size: 27px;
+      margin: 0 0 8px;
+    }
+
+    .section-heading p {
+      color: var(--info-muted);
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .announcement-count {
+      color: var(--info-gold);
+      font-size: 13px;
+      font-weight: 600;
     }
 
     .info-list {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 22px;
     }
 
     .info-card {
-      background: var(--card-bg, #fff);
-      color: var(--text-color, #222);
-      border: 1px solid var(--border-color, #ddd);
-      border-radius: 14px;
-      padding: 26px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+      position: relative;
+      background: linear-gradient(145deg, #202228, #191a1f);
+      border: 1px solid var(--info-border);
+      border-radius: 15px;
+      padding: 27px;
+      transition: transform 0.25s, border-color 0.25s;
+      overflow: hidden;
     }
 
-    .info-card h2 {
-      font-size: 1.4rem;
-      margin-bottom: 12px;
+    .info-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(214,169,79,0.55);
     }
 
-    .info-card p {
-      line-height: 1.7;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
+    .info-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--info-gold);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .announcement-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--info-gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .announcement-label::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--info-gold);
+      border-radius: 50%;
     }
 
     .info-date {
-      display: block;
-      margin-top: 18px;
-      font-size: 0.85rem;
-      color: #888;
+      color: var(--info-muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .info-card h3 {
+      font-size: 21px;
+      line-height: 1.4;
+      margin: 0 0 13px;
+      color: white;
+      overflow-wrap: anywhere;
+    }
+
+    .info-card .body-text {
+      color: #bfc0c5;
+      font-size: 15px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin: 0;
     }
 
     .info-status {
+      grid-column: 1 / -1;
       text-align: center;
-      padding: 35px 15px;
-      color: #888;
+      padding: 65px 20px;
+      background: var(--info-card);
+      border: 1px solid var(--info-border);
+      border-radius: 15px;
+      color: var(--info-muted);
+      line-height: 1.7;
+    }
+
+    .status-icon {
+      font-size: 35px;
+      margin-bottom: 15px;
     }
 
     .info-error {
-      color: #b42318;
+      color: #ff9c9c;
+    }
+
+    .contact-strip {
+      max-width: 1050px;
+      margin: 0 auto 80px;
+      padding: 0 22px;
+    }
+
+    .contact-inner {
+      background: linear-gradient(110deg, #29251d, #1b1c20);
+      border: 1px solid rgba(214,169,79,0.25);
+      border-radius: 16px;
+      padding: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    .contact-inner h2 {
+      margin: 0 0 9px;
+      font-size: 23px;
+    }
+
+    .contact-inner p {
+      margin: 0;
+      color: var(--info-muted);
+      line-height: 1.6;
+    }
+
+    .contact-button {
+      display: inline-block;
+      padding: 13px 23px;
+      background: var(--info-gold);
+      color: #171717;
+      text-decoration: none;
+      border-radius: 7px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+
+    .contact-button:hover {
+      background: #edc675;
+      transform: translateY(-2px);
+    }
+
+    .info-footer {
+      border-top: 1px solid var(--info-border);
+      padding: 28px 20px;
+      text-align: center;
+      color: var(--info-muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 650px) {
+      .info-hero {
+        padding: 75px 20px 65px;
+      }
+
+      .info-main {
+        padding: 55px 17px 70px;
+      }
+
+      .info-list {
+        grid-template-columns: 1fr;
+      }
+
+      .info-card {
+        padding: 23px;
+      }
+
+      .card-top {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .contact-inner {
+        padding: 26px;
+      }
+
+      .contact-button {
+        width: 100%;
+        text-align: center;
+      }
     }
   </style>
 </head>
 
 <body>
 
+  <!-- NAVIGATION -->
   <header>
     <nav class="navbar">
       <a href="index.html" class="logo">M&N Bilverkstad</a>
@@ -96,24 +333,70 @@
     </nav>
   </header>
 
-  <main class="info-page">
-    <section class="info-heading">
-      <h1>Information & Nyheter</h1>
-      <p>Här hittar du de senaste uppdateringarna från M&N Bilverkstad.</p>
+  <!-- HERO -->
+  <section class="info-hero">
+    <div class="hero-content">
+      <span class="hero-label">M&N Bilverkstad</span>
+
+      <h1>Information <span>&</span><br>Nyheter</h1>
+
+      <p>
+        Håll dig uppdaterad med de senaste nyheterna,
+        meddelandena och viktig informationen från vår verkstad.
+      </p>
+    </div>
+  </section>
+
+  <!-- ANNOUNCEMENTS -->
+  <main class="info-main">
+
+    <div class="section-heading">
+      <div>
+        <h2>Senaste uppdateringarna</h2>
+        <p>Information direkt från M&N Bilverkstad.</p>
+      </div>
+
+      <span class="announcement-count" id="announcementCount">
+        Hämtar...
+      </span>
+    </div>
+
+    <section
+      id="announcementList"
+      class="info-list"
+      aria-live="polite"
+    >
+      <div class="info-status">
+        <div class="status-icon">◌</div>
+        Hämtar senaste informationen...
+      </div>
     </section>
 
-    <section id="announcementList" class="info-list" aria-live="polite">
-      <p class="info-status">Hämtar information...</p>
-    </section>
   </main>
 
-  <footer>
+  <!-- CONTACT -->
+  <section class="contact-strip">
+    <div class="contact-inner">
+      <div>
+        <h2>Har du några frågor?</h2>
+        <p>Kontakta oss så hjälper vi dig gärna.</p>
+      </div>
+
+      <a href="contact.html" class="contact-button">
+        Kontakta oss →
+      </a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="info-footer">
     <p>
       © <span id="year"></span> M&N Bilverkstad.
       Alla rättigheter förbehållna.
     </p>
   </footer>
 
+  <!-- SUPABASE -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -121,7 +404,7 @@
       "https://cxjbgazjgzjzliipbmft.supabase.co";
 
     const SUPABASE_ANON_KEY =
-      "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
+      "DIN_SUPABASE_PUBLISHABLE_KEY";
 
     const client = window.supabase.createClient(
       SUPABASE_URL,
@@ -129,38 +412,55 @@
     );
 
     const list = document.getElementById("announcementList");
+    const count = document.getElementById("announcementCount");
 
     document.getElementById("year").textContent =
       new Date().getFullYear();
 
     async function loadAnnouncements() {
-      list.innerHTML =
-        '<p class="info-status">Hämtar information...</p>';
-
       const { data, error } = await client
         .from("announcements")
         .select("id, title, body, created_at, visible_until")
-        .or("visible_until.is.null,visible_until.gte." +
-          new Date().toISOString().slice(0, 10))
+        .or(
+          "visible_until.is.null,visible_until.gte." +
+          new Date().toISOString().slice(0, 10)
+        )
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Supabase error:", error);
+        console.error("Announcement error:", error);
 
-        list.innerHTML =
-          '<p class="info-status info-error">' +
-          'Kunde inte hämta information just nu. Försök igen senare.' +
-          '</p>';
+        count.textContent = "";
+
+        list.innerHTML = `
+          <div class="info-status info-error">
+            <div class="status-icon">!</div>
+            <strong>Informationen kunde inte hämtas.</strong>
+            <p>Försök igen senare.</p>
+          </div>
+        `;
+
         return;
       }
 
       if (!data || data.length === 0) {
-        list.innerHTML =
-          '<p class="info-status">' +
-          'Det finns ingen publicerad information just nu.' +
-          '</p>';
+        count.textContent = "0 uppdateringar";
+
+        list.innerHTML = `
+          <div class="info-status">
+            <div class="status-icon">✦</div>
+            <strong>Inga nya uppdateringar just nu.</strong>
+            <p>Kom gärna tillbaka snart för att läsa senaste nytt.</p>
+          </div>
+        `;
+
         return;
       }
+
+      count.textContent =
+        data.length + (data.length === 1
+          ? " uppdatering"
+          : " uppdateringar");
 
       list.innerHTML = "";
 
@@ -168,21 +468,39 @@
         const card = document.createElement("article");
         card.className = "info-card";
 
-        const heading = document.createElement("h2");
-        heading.textContent = item.title;
+        const top = document.createElement("div");
+        top.className = "card-top";
 
-        const body = document.createElement("p");
-        body.textContent = item.body;
+        const label = document.createElement("span");
+        label.className = "announcement-label";
+        label.textContent = "Nyhet från verkstaden";
 
         const date = document.createElement("span");
         date.className = "info-date";
 
-        date.textContent = "Publicerad: " +
-          new Date(item.created_at).toLocaleDateString("sv-SE");
+        const parsedDate = new Date(item.created_at);
 
+        date.textContent = isNaN(parsedDate.getTime())
+          ? ""
+          : parsedDate.toLocaleDateString("sv-SE", {
+              year: "numeric",
+              month: "long",
+              day: "numeric"
+            });
+
+        const heading = document.createElement("h3");
+        heading.textContent = item.title;
+
+        const body = document.createElement("p");
+        body.className = "body-text";
+        body.textContent = item.body;
+
+        top.appendChild(label);
+        top.appendChild(date);
+
+        card.appendChild(top);
         card.appendChild(heading);
         card.appendChild(body);
-        card.appendChild(date);
 
         list.appendChild(card);
       });
