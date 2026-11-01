@@ -3,11 +3,20 @@
 // M&N BILVERKSTAD – GEMENSAMT SCRIPT
 // ======================================
 
-// Supabase-inställningar
-// Använd samma Project URL och Publishable key
-// som i admin.html.
-const SUPABASE_URL = "DIN_SUPABASE_PROJECT_URL";
+const SUPABASE_URL = "https://cxjbgazjgzjzliipbmft.supabase.co";
 const SUPABASE_ANON_KEY = "DIN_SUPABASE_PUBLISHABLE_KEY";
+
+let supabaseClient = null;
+
+if (
+  window.supabase &&
+  SUPABASE_ANON_KEY !== "DIN_SUPABASE_PUBLISHABLE_KEY"
+) {
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+}
 
 // Mobilmeny
 const menuButton = document.querySelector(".menu-toggle");
@@ -26,24 +35,7 @@ document.querySelectorAll(".year").forEach((element) => {
   element.textContent = new Date().getFullYear();
 });
 
-// ======================================
-// SUPABASE-KLIENT
-// ======================================
-
-let supabaseClient = null;
-
-if (
-  window.supabase &&
-  SUPABASE_URL !== "DIN_SUPABASE_PROJECT_URL" &&
-  SUPABASE_ANON_KEY !== "DIN_SUPABASE_PUBLISHABLE_KEY"
-) {
-  supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
-}
-
-// Datum enligt svensk tidszon
+// Svenskt datum
 function getTodayInStockholm() {
   return new Intl.DateTimeFormat("sv-SE", {
     timeZone: "Europe/Stockholm",
@@ -64,8 +56,8 @@ if (bookingForm) {
   const formMessage = document.getElementById("formMessage");
   const dateInput = document.getElementById("preferred_date");
 
-  function showBookingMessage(text, type = "") {
-    formMessage.textContent = text;
+  function showBookingMessage(message, type = "") {
+    formMessage.textContent = message;
     formMessage.className = "form-message " + type;
   }
 
@@ -92,27 +84,31 @@ if (bookingForm) {
     const car = document.getElementById("car").value.trim();
     const service = document.getElementById("service").value;
     const preferredDate = dateInput.value || null;
-    const messageText = document.getElementById("message").value.trim();
+    const message = document.getElementById("message").value.trim();
 
     if (!name || !phone || !service) {
-      showBookingMessage("Fyll i alla obligatoriska fält.", "error");
+      showBookingMessage(
+        "Fyll i alla obligatoriska fält.",
+        "error"
+      );
       return;
     }
 
     submitButton.disabled = true;
     submitButton.textContent = "Skickar...";
+
     showBookingMessage("Skickar din bokningsförfrågan...");
 
     const { error } = await supabaseClient
       .from("bookings")
       .insert({
-        name: name,
-        phone: phone,
+        name,
+        phone,
         email: email || null,
         car: car || null,
-        service: service,
+        service,
         preferred_date: preferredDate,
-        message: messageText || null
+        message: message || null
       });
 
     submitButton.disabled = false;
@@ -120,6 +116,7 @@ if (bookingForm) {
 
     if (error) {
       console.error("Booking error:", error);
+
       showBookingMessage(
         "Det gick inte att skicka förfrågan. Försök igen eller kontakta verkstaden direkt.",
         "error"
@@ -141,12 +138,14 @@ if (bookingForm) {
 }
 
 // ======================================
-// INFORMATION FRÅN ADMINPANELEN
-// VISAS PÅ INDEX.HTML
+// INFORMATION PÅ HEMSIDAN
 // ======================================
 
-const informationSection = document.getElementById("workshopInformation");
-const announcementList = document.getElementById("publicAnnouncementList");
+const informationSection =
+  document.getElementById("workshopInformation");
+
+const announcementList =
+  document.getElementById("publicAnnouncementList");
 
 if (informationSection && announcementList) {
   async function loadPublicAnnouncements() {
@@ -164,7 +163,7 @@ if (informationSection && announcementList) {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Could not load announcements:", error);
+      console.error("Announcement error:", error);
       informationSection.hidden = true;
       return;
     }
@@ -192,11 +191,11 @@ if (informationSection && announcementList) {
         const expiry = document.createElement("p");
         expiry.className = "announcement-date";
 
-        const dateParts = announcement.visible_until.split("-");
-        const formattedDate =
-          `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+        const parts = announcement.visible_until.split("-");
+        expiry.textContent =
+          "Informationen gäller till och med " +
+          `${parts[2]}/${parts[1]}/${parts[0]}`;
 
-        expiry.textContent = "Informationen gäller till och med " + formattedDate;
         card.appendChild(expiry);
       }
 
@@ -208,7 +207,6 @@ if (informationSection && announcementList) {
 
   loadPublicAnnouncements();
 
-  // Hämta ny information när besökaren återvänder till fliken.
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       loadPublicAnnouncements();
