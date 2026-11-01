@@ -1,6 +1,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Montserrat:wght@600;700;800&display=swap');
 
+/* ================================
+   GRUNDINSTÄLLNINGAR
+================================ */
+
 :root {
   --dark: #111827;
   --darker: #090f1b;
@@ -8,6 +12,7 @@
   --light: #f4f6f8;
   --text: #596273;
   --white: #fff;
+  --container: 1160px;
 }
 
 * {
@@ -18,12 +23,25 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body {
   font-family: 'DM Sans', sans-serif;
   color: var(--dark);
   line-height: 1.65;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 a {
@@ -31,18 +49,33 @@ a {
 }
 
 .container {
-  width: min(1160px, 90%);
-  margin: auto;
+  width: min(var(--container), 90%);
+  margin-inline: auto;
 }
 
-/* HEADER OCH MENY */
+h1,
+h2,
+h3 {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.2;
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+
+/* ================================
+   NAVIGATION
+================================ */
 
 .site-header {
   background: var(--darker);
-  color: #fff;
+  color: white;
   position: sticky;
   top: 0;
-  z-index: 20;
+  z-index: 100;
+  width: 100%;
 }
 
 .nav-wrap {
@@ -54,10 +87,11 @@ a {
 }
 
 .logo {
-  font: 800 27px 'Montserrat', sans-serif;
-  color: #fff;
+  font: 800 24px 'Montserrat', sans-serif;
+  color: white;
   text-decoration: none;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .logo span {
@@ -67,16 +101,16 @@ a {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 23px;
+  justify-content: flex-end;
+  gap: 22px;
 }
 
 .main-nav a {
-  font-size: 17px;
-  font-weight: 600;
-  padding: 12px 5px;
+  font-size: 14px;
   text-decoration: none;
   color: #e9edf4;
   transition: color .2s;
+  white-space: nowrap;
 }
 
 .main-nav a:hover,
@@ -87,8 +121,8 @@ a {
 .main-nav .nav-cta {
   background: var(--accent);
   color: var(--darker);
-  font-size: 17px;
-  padding: 13px 21px;
+  font-weight: 700;
+  padding: 10px 17px;
   border-radius: 5px;
 }
 
@@ -105,9 +139,49 @@ a {
   color: white;
   font-size: 28px;
   cursor: pointer;
+  padding: 7px;
+  line-height: 1;
 }
 
-/* STARTSIDANS HERO */
+
+/* ================================
+   KNAPPAR
+================================ */
+
+.button {
+  display: inline-block;
+  border: 0;
+  border-radius: 5px;
+  background: var(--accent);
+  color: var(--darker);
+  padding: 13px 22px;
+  text-decoration: none;
+  font: 700 14px 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-align: center;
+  transition: transform .2s, background .2s;
+}
+
+.button:hover {
+  background: #f2b83e;
+  transform: translateY(-2px);
+}
+
+.button-outline {
+  border: 1px solid rgba(255,255,255,.75);
+  background: transparent;
+  color: white;
+}
+
+.button-outline:hover {
+  background: white;
+  color: var(--dark);
+}
+
+
+/* ================================
+   HERO / STARTSIDA
+================================ */
 
 .hero {
   min-height: 630px;
@@ -117,7 +191,7 @@ a {
   background:
     linear-gradient(90deg, rgba(5,10,20,.91), rgba(5,10,20,.32)),
     url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=2000&q=85')
-    center/cover;
+    center / cover no-repeat;
 }
 
 .hero-content {
@@ -138,13 +212,8 @@ a {
   color: var(--accent);
 }
 
-h1, h2, h3 {
-  font-family: 'Montserrat', sans-serif;
-  line-height: 1.2;
-}
-
 .hero h1 {
-  font-size: clamp(44px, 7vw, 78px);
+  font-size: clamp(40px, 7vw, 78px);
   margin-bottom: 20px;
 }
 
@@ -161,38 +230,10 @@ h1, h2, h3 {
   flex-wrap: wrap;
 }
 
-/* KNAPPAR */
 
-.button {
-  display: inline-block;
-  border: 0;
-  border-radius: 5px;
-  background: var(--accent);
-  color: var(--darker);
-  padding: 13px 22px;
-  text-decoration: none;
-  font: 700 14px 'DM Sans', sans-serif;
-  cursor: pointer;
-  transition: transform .2s, background .2s;
-}
-
-.button:hover {
-  background: #f2b83e;
-  transform: translateY(-2px);
-}
-
-.button-outline {
-  border: 1px solid rgba(255,255,255,.75);
-  background: transparent;
-  color: white;
-}
-
-.button-outline:hover {
-  background: white;
-  color: var(--dark);
-}
-
-/* SEKTIONER */
+/* ================================
+   SEKTIONER
+================================ */
 
 .section {
   padding: 82px 0;
@@ -207,7 +248,7 @@ h1, h2, h3 {
 .section-heading h2,
 .split-layout h2,
 .cta-content h2 {
-  font-size: clamp(29px, 4vw, 42px);
+  font-size: clamp(27px, 4vw, 42px);
   margin-bottom: 14px;
 }
 
@@ -217,11 +258,14 @@ h1, h2, h3 {
   color: var(--text);
 }
 
-/* KORT PÅ STARTSIDAN */
+
+/* ================================
+   KORT PÅ STARTSIDAN
+================================ */
 
 .feature-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
 }
 
@@ -233,6 +277,7 @@ h1, h2, h3 {
   border-radius: 9px;
   padding: 28px;
   box-shadow: 0 8px 30px rgba(17,24,39,.07);
+  min-width: 0;
 }
 
 .feature-icon {
@@ -259,46 +304,10 @@ h1, h2, h3 {
   text-decoration: none;
 }
 
-/* INFORMATION FRÅN ADMINPANELEN */
 
-.workshop-information {
-  background: #f4f6f8;
-}
-
-.announcement-list {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
-  max-width: 850px;
-  margin: auto;
-}
-
-.public-announcement {
-  background: #fff;
-  border-left: 5px solid var(--accent);
-  border-radius: 9px;
-  padding: 25px;
-  box-shadow: 0 6px 24px rgba(17,24,39,.07);
-}
-
-.public-announcement h3 {
-  font-size: 21px;
-  margin-bottom: 10px;
-}
-
-.public-announcement p {
-  color: var(--text);
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.public-announcement .announcement-date {
-  font-size: 12px;
-  margin-top: 14px;
-  color: #687386;
-}
-
-/* CTA-SEKTION */
+/* ================================
+   MÖRK CTA-SEKTION
+================================ */
 
 .cta-band {
   background: var(--darker);
@@ -317,7 +326,10 @@ h1, h2, h3 {
   margin: 0;
 }
 
-/* UNDERSIDOR */
+
+/* ================================
+   UNDERSIDOR
+================================ */
 
 .page-hero {
   background: linear-gradient(115deg, #111827, #263449);
@@ -326,7 +338,7 @@ h1, h2, h3 {
 }
 
 .page-hero h1 {
-  font-size: clamp(38px, 6vw, 60px);
+  font-size: clamp(36px, 6vw, 60px);
   margin-bottom: 12px;
 }
 
@@ -334,11 +346,14 @@ h1, h2, h3 {
   color: #d2d8e1;
 }
 
-/* OM OSS */
+
+/* ================================
+   OM OSS
+================================ */
 
 .split-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: center;
   gap: 55px;
 }
@@ -352,17 +367,21 @@ h1, h2, h3 {
 }
 
 .rounded-photo {
+  display: block;
   width: 100%;
   height: 390px;
   object-fit: cover;
   border-radius: 10px;
 }
 
-/* TJÄNSTER */
+
+/* ================================
+   TJÄNSTER
+================================ */
 
 .service-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 23px;
 }
 
@@ -371,6 +390,7 @@ h1, h2, h3 {
   border-radius: 9px;
   background: white;
   box-shadow: 0 8px 28px rgba(17,24,39,.08);
+  min-width: 0;
 }
 
 .service-card img {
@@ -406,11 +426,14 @@ h1, h2, h3 {
   margin-top: 22px;
 }
 
-/* GALLERI */
+
+/* ================================
+   GALLERI
+================================ */
 
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
 }
 
@@ -419,6 +442,7 @@ h1, h2, h3 {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 5px 22px rgba(17,24,39,.07);
+  min-width: 0;
 }
 
 .gallery-grid img {
@@ -434,11 +458,14 @@ h1, h2, h3 {
   font-size: 14px;
 }
 
-/* KONTAKT */
+
+/* ================================
+   KONTAKT
+================================ */
 
 .contact-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 25px;
 }
 
@@ -457,6 +484,7 @@ h1, h2, h3 {
 .contact-card a:not(.button),
 .booking-aside a {
   color: #9a680d;
+  overflow-wrap: anywhere;
 }
 
 .hours-row {
@@ -476,11 +504,14 @@ h1, h2, h3 {
   margin-top: 12px;
 }
 
-/* BOKNING */
+
+/* ================================
+   BOKNING
+================================ */
 
 .booking-layout {
   display: grid;
-  grid-template-columns: 1.5fr .8fr;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, .8fr);
   align-items: start;
   gap: 25px;
 }
@@ -489,11 +520,12 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
 }
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
 }
 
@@ -508,11 +540,17 @@ h1, h2, h3 {
 .booking-form select,
 .booking-form textarea {
   width: 100%;
+  min-width: 0;
   padding: 12px;
   border: 1px solid #d8dee7;
   border-radius: 5px;
   font: inherit;
-  background: #fff;
+  background: white;
+}
+
+.booking-form textarea {
+  resize: vertical;
+  min-height: 120px;
 }
 
 .booking-form input:focus,
@@ -536,7 +574,10 @@ h1, h2, h3 {
   color: #276749;
 }
 
-/* FOOTER */
+
+/* ================================
+   FOOTER
+================================ */
 
 .site-footer {
   background: var(--darker);
@@ -549,32 +590,52 @@ h1, h2, h3 {
   display: flex;
   justify-content: space-between;
   gap: 15px;
+  flex-wrap: wrap;
 }
 
-/* MINDRE SKÄRMAR */
+.site-footer a {
+  color: inherit;
+}
 
-@media (max-width: 900px) {
+
+/* ================================
+   MELLANSTORA SKÄRMAR
+================================ */
+
+@media (max-width: 1050px) {
+  .nav-wrap {
+    gap: 15px;
+  }
+
   .main-nav {
     gap: 13px;
   }
 
   .main-nav a {
-    font-size: 16px;
+    font-size: 13px;
   }
 
-  .main-nav .nav-cta {
-    font-size: 16px;
+  .logo {
+    font-size: 21px;
   }
 
+  .feature-grid,
   .service-grid,
   .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 17px;
+  }
+
+  .split-layout {
+    gap: 30px;
   }
 }
 
-/* MOBIL */
 
-@media (max-width: 700px) {
+/* ================================
+   SURFPLATTA OCH MINDRE LAPTOP
+================================ */
+
+@media (max-width: 900px) {
   .menu-toggle {
     display: block;
   }
@@ -590,10 +651,11 @@ h1, h2, h3 {
     left: 0;
     right: 0;
     background: var(--darker);
-    padding: 20px 5%;
+    padding: 22px 5%;
     flex-direction: column;
     align-items: stretch;
     gap: 17px;
+    box-shadow: 0 12px 20px rgba(0,0,0,.2);
   }
 
   .main-nav.open {
@@ -601,21 +663,89 @@ h1, h2, h3 {
   }
 
   .main-nav a {
-    font-size: 18px;
-    padding: 8px 0;
+    font-size: 15px;
+    padding: 4px 0;
   }
 
   .main-nav .nav-cta {
     text-align: center;
-    padding: 13px;
+    padding: 12px;
   }
 
   .hero {
-    min-height: 540px;
+    min-height: 550px;
+  }
+
+  .feature-grid,
+  .service-grid,
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-aside {
+    width: 100%;
   }
 
   .section {
-    padding: 62px 0;
+    padding: 68px 0;
+  }
+}
+
+
+/* ================================
+   MOBIL
+================================ */
+
+@media (max-width: 600px) {
+  html {
+    scroll-padding-top: 75px;
+  }
+
+  .container {
+    width: 90%;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .hero {
+    min-height: 520px;
+    background-position: 58% center;
+  }
+
+  .hero-content {
+    padding-top: 45px;
+    padding-bottom: 45px;
+  }
+
+  .hero h1 {
+    font-size: clamp(38px, 11vw, 54px);
+  }
+
+  .hero-content > p:not(.eyebrow) {
+    font-size: 16px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+  }
+
+  .section {
+    padding: 55px 0;
+  }
+
+  .section-heading {
+    margin-bottom: 30px;
   }
 
   .feature-grid,
@@ -627,12 +757,31 @@ h1, h2, h3 {
     grid-template-columns: 1fr;
   }
 
+  .feature-card,
+  .contact-card,
+  .booking-form,
+  .booking-aside {
+    padding: 23px;
+  }
+
   .rounded-photo {
-    height: 280px;
+    height: 260px;
+  }
+
+  .service-card img {
+    height: 220px;
   }
 
   .gallery-grid img {
-    height: 230px;
+    height: 240px;
+  }
+
+  .page-hero {
+    padding: 58px 0;
+  }
+
+  .page-hero h1 {
+    font-size: 38px;
   }
 
   .cta-content {
@@ -640,11 +789,65 @@ h1, h2, h3 {
     flex-direction: column;
   }
 
+  .cta-content .button {
+    width: 100%;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
   }
 
+  .booking-form .button {
+    width: 100%;
+  }
+
+  .hours-row {
+    font-size: 13px;
+  }
+
   .footer-inner {
     flex-direction: column;
+    gap: 8px;
+  }
+}
+
+
+/* ================================
+   EXTRA SMÅ MOBILER
+================================ */
+
+@media (max-width: 380px) {
+  .logo {
+    font-size: 18px;
+  }
+
+  .hero h1 {
+    font-size: 36px;
+  }
+
+  .button {
+    padding: 12px 16px;
+  }
+
+  .feature-card,
+  .contact-card,
+  .booking-form,
+  .booking-aside {
+    padding: 19px;
+  }
+}
+
+
+/* ================================
+   TILLGÄNGLIGHET
+================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
   }
 }
