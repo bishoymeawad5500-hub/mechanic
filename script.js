@@ -1,3 +1,4 @@
+
 // ======================================
 // M&N BILVERKSTAD – GEMENSAMT SCRIPT
 // ======================================
@@ -7,14 +8,13 @@ const SUPABASE_ANON_KEY = "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
 
 let supabaseClient = null;
 
-// Skapa Supabase-anslutningen
 if (window.supabase) {
   supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
 } else {
-  console.error("Supabase-biblioteket kunde inte laddas.");
+  console.error("Supabase kunde inte laddas.");
 }
 
 // ======================================
@@ -101,33 +101,88 @@ const BOOKING_TIMES = [
   "17:00"
 ];
 
-function setupBookingTimes() {
-  const dateInput =
+function getBookingDateInput() {
+  return (
     document.getElementById("preferred_date") ||
-    document.getElementById("date");
+    document.getElementById("date")
+  );
+}
 
-  const timeSelect =
+function getBookingTimeInput() {
+  return (
     document.getElementById("preferred_time") ||
-    document.getElementById("time");
+    document.getElementById("time")
+  );
+}
+
+// ======================================
+// HÄMTA UPPTAGNA TIDER
+// ======================================
+
+async function loadAvailableTimes() {
+  const dateInput = getBookingDateInput();
+  const timeSelect = getBookingTimeInput();
 
   if (!dateInput || !timeSelect) return;
 
-  dateInput.min = getTodayInStockholm();
+  const selectedDate = dateInput.value;
 
-  function updateTimes() {
+  timeSelect.replaceChildren();
+  timeSelect.disabled = true;
+
+  const firstOption = document.createElement("option");
+  firstOption.value = "";
+
+  if (!selectedDate) {
+    firstOption.textContent = "Välj först ett datum";
+    timeSelect.appendChild(firstOption);
+    timeSelect.disabled = false;
+    return;
+  }
+
+  if (!supabaseClient) {
+    firstOption.textContent = "Bokningssystemet är inte anslutet";
+    timeSelect.appendChild(firstOption);
+    return;
+  }
+
+  firstOption.textContent = "Hämtar lediga tider...";
+  timeSelect.appendChild(firstOption);
+
+  try {
+    const { data, error } = await supabaseClient.rpc(
+      "get_booked_slots",
+      {
+        p_date: selectedDate
+      }
+    );
+
+    if (error) throw error;
+
+    // Gör om upptagna tider till formatet HH:MM
+    const bookedTimes = (data || []).map(row =>
+      String(row.booked_time).slice(0, 5)
+    );
+
+    // Visa endast tider som inte redan är bokade
+    const availableTimes = BOOKING_TIMES.filter(
+      time => !bookedTimes.includes(time)
+    );
+
     timeSelect.replaceChildren();
 
-    const firstOption = document.createElement("option");
-    firstOption.value = "";
-    firstOption.textContent = dateInput.value
-      ? "Välj en tid"
-      : "Välj först ett datum";
+    const chooseOption = document.createElement("option");
+    chooseOption.value = "";
 
-    timeSelect.appendChild(firstOption);
+    if (availableTimes.length === 0) {
+      chooseOption.textContent = "Inga lediga tider denna dag";
+    } else {
+      chooseOption.textContent = "Välj en ledig tid";
+    }
 
-    if (!dateInput.value) return;
+    timeSelect.appendChild(chooseOption);
 
-    BOOKING_TIMES.forEach(time => {
+    availableTimes.forEach(time => {
       const option = document.createElement("option");
 
       option.value = time;
@@ -135,11 +190,39 @@ function setupBookingTimes() {
 
       timeSelect.appendChild(option);
     });
+
+  } catch (error) {
+    console.error("Fel vid hämtning av tider:", error);
+
+    timeSelect.replaceChildren();
+
+    const errorOption = document.createElement("option");
+    errorOption.value = "";
+    errorOption.textContent = "Kunde inte hämta tider – försök igen";
+
+    timeSelect.appendChild(errorOption);
+
+  } finally {
+    timeSelect.disabled = false;
   }
+}
 
-  dateInput.addEventListener("change", updateTimes);
+// ======================================
+// AKTIVERA DATUM OCH TIDER
+// ======================================
 
-  updateTimes();
+function setupBookingTimes() {
+  const dateInput = getBookingDateInput();
+
+  if (!dateInput) return;
+
+  dateInput.min = getTodayInStockholm();
+
+  dateInput.addEventListener("change", () => {
+    loadAvailableTimes();
+  });
+
+  loadAvailableTimes();
 }
 
 setupBookingTimes();
@@ -176,10 +259,9 @@ if (bookingForm) {
     if (!supabaseClient) {
       showMessage(
         formMessage,
-        "Bokningssystemet kunde inte ansluta. Ladda om sidan och försök igen.",
+        "Bokningssystemet kunde inte ansluta. Försök igen senare.",
         "error"
       );
-
       return;
     }
 
@@ -189,8 +271,8 @@ if (bookingForm) {
     const car = getInput("car")?.value.trim() || "";
     const service = getInput("service")?.value || "";
 
-    const dateInput = getInput("preferred_date", "date");
-    const timeInput = getInput("preferred_time", "time");
+    const dateInput = getBookingDateInput();
+    const timeInput = getBookingTimeInput();
 
     const preferredDate = dateInput?.value || "";
     const preferredTime = timeInput?.value || "";
@@ -209,7 +291,6 @@ if (bookingForm) {
         "Fyll i namn, telefon, tjänst, datum och tid.",
         "error"
       );
-
       return;
     }
 
@@ -219,7 +300,6 @@ if (bookingForm) {
         "Du kan inte välja ett datum som redan har passerat.",
         "error"
       );
-
       return;
     }
 
@@ -229,7 +309,6 @@ if (bookingForm) {
         "Välj en giltig bokningstid.",
         "error"
       );
-
       return;
     }
 
@@ -260,10 +339,7 @@ if (bookingForm) {
         .from("bookings")
         .insert([booking]);
 
-      if (error) {
-        console.error("Supabase-fel:", error);
-        throw error;
-      }
+      if (error) throw error;
 
       bookingForm.reset();
 
@@ -285,11 +361,23 @@ if (bookingForm) {
     } catch (error) {
       console.error("Bokningsfel:", error);
 
-      showMessage(
-        formMessage,
-        "Bokningen kunde inte skickas. Försök igen eller kontakta oss via telefon.",
-        "error"
-      );
+      if (error.code === "23505") {
+        showMessage(
+          formMessage,
+          "Tyvärr! Någon annan har redan bokat den tiden. Välj en annan ledig tid.",
+          "error"
+        );
+
+        // Uppdatera listan med lediga tider
+        await loadAvailableTimes();
+
+      } else {
+        showMessage(
+          formMessage,
+          "Bokningen kunde inte skickas. Försök igen eller kontakta oss via telefon.",
+          "error"
+        );
+      }
 
     } finally {
       if (submitButton) {
@@ -337,7 +425,6 @@ if (informationSection && announcementList) {
 
       data.forEach(announcement => {
         const card = document.createElement("article");
-
         card.className = "public-announcement";
 
         const heading = document.createElement("h3");
@@ -350,7 +437,6 @@ if (informationSection && announcementList) {
 
         if (announcement.visible_until) {
           const expiry = document.createElement("p");
-
           expiry.className = "announcement-date";
 
           expiry.textContent =
@@ -367,7 +453,6 @@ if (informationSection && announcementList) {
 
     } catch (error) {
       console.error("Informationsfel:", error);
-
       informationSection.hidden = true;
     }
   }
