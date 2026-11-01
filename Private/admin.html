@@ -4,92 +4,210 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Admin | M&N Bilverkstad</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="../style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    body { background: #f3f5f8; }
-    .admin-wrap { width: min(1100px, 92%); margin: 35px auto; }
+    body {
+      background: #f3f5f8;
+    }
+
+    .admin-wrap {
+      width: min(1100px, 92%);
+      margin: 35px auto;
+    }
+
     .admin-box {
-      background: white; padding: 25px; border-radius: 12px;
-      box-shadow: 0 5px 24px rgba(17,24,39,.06); margin-bottom: 22px;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 24px rgba(17,24,39,.06);
+      margin-bottom: 22px;
     }
-    .login-box { max-width: 430px; margin: 70px auto; }
+
+    .login-box {
+      max-width: 430px;
+      margin: 70px auto;
+    }
+
     .admin-top, .section-top {
-      display: flex; justify-content: space-between;
-      align-items: center; gap: 15px; flex-wrap: wrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
     }
+
     .admin-input, .admin-textarea {
-      display: block; width: 100%; padding: 13px;
-      border: 1px solid #d8dee7; border-radius: 6px;
-      font: inherit; margin: 7px 0 16px;
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d8dee7;
+      border-radius: 6px;
+      font: inherit;
+      margin: 7px 0 16px;
+      box-sizing: border-box;
     }
-    .admin-textarea { min-height: 120px; resize: vertical; }
+
+    .admin-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
     .dashboard-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 18px; margin: 24px 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 24px 0;
     }
+
     .dashboard-card {
-      background: white; border: 2px solid transparent;
-      border-radius: 12px; padding: 23px; text-align: left;
-      cursor: pointer; box-shadow: 0 5px 24px rgba(17,24,39,.06);
-      font: inherit; transition: .2s;
+      background: white;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      padding: 23px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 5px 24px rgba(17,24,39,.06);
+      font: inherit;
+      transition: .2s;
     }
-    .dashboard-card:hover, .dashboard-card.active {
-      border-color: #e5a323; transform: translateY(-2px);
+
+    .dashboard-card:hover,
+    .dashboard-card.active {
+      border-color: #e5a323;
+      transform: translateY(-2px);
     }
+
     .dashboard-card .number {
-      display: block; font: 800 34px 'Montserrat', sans-serif;
+      display: block;
+      font: 800 34px 'Montserrat', sans-serif;
       margin: 12px 0 5px;
     }
-    .dashboard-card .card-label { font-weight: 700; font-size: 17px; }
-    .dashboard-card .card-description { color: #687386; font-size: 13px; }
-    .panel-section { display: none; }
-    .panel-section.active { display: block; }
+
+    .dashboard-card .card-label {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .dashboard-card .card-description {
+      color: #687386;
+      font-size: 13px;
+    }
+
+    .panel-section {
+      display: none;
+    }
+
+    .panel-section.active {
+      display: block;
+    }
+
     .booking-item, .notice-item {
-      border: 1px solid #e5e7eb; border-radius: 9px;
-      padding: 18px; margin: 14px 0;
+      border: 1px solid #e5e7eb;
+      border-radius: 9px;
+      padding: 18px;
+      margin: 14px 0;
     }
+
     .booking-item p, .notice-item p {
-      margin: 7px 0; overflow-wrap: anywhere;
+      margin: 7px 0;
+      overflow-wrap: anywhere;
     }
-    .booking-item select {
-      padding: 9px; border: 1px solid #d8dee7;
-      border-radius: 5px; margin-top: 8px;
+
+    .notice-item {
+      border-left: 4px solid #e5a323;
     }
-    .notice-item { border-left: 4px solid #e5a323; }
-    .notice-item.expired { opacity: .65; border-left-color: #9ca3af; }
-    .notice-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 15px; }
+
+    .notice-actions, .form-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
     .secondary-button, .delete-button {
-      border: 0; border-radius: 5px; padding: 10px 15px;
-      cursor: pointer; font: 700 13px 'DM Sans', sans-serif;
+      border: 0;
+      border-radius: 5px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font: 700 13px 'DM Sans', sans-serif;
     }
-    .secondary-button { background: #e9edf3; color: #111827; }
-    .delete-button { background: #fee2e2; color: #991b1b; }
+
+    .secondary-button {
+      background: #e9edf3;
+      color: #111827;
+    }
+
+    .delete-button {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
     .plus-button {
-      width: 52px; height: 52px; border: 0; border-radius: 50%;
-      background: #e5a323; color: #111827; font-size: 30px;
-      cursor: pointer; font-weight: 700;
+      width: 52px;
+      height: 52px;
+      border: 0;
+      border-radius: 50%;
+      background: #e5a323;
+      color: #111827;
+      font-size: 30px;
+      cursor: pointer;
+      font-weight: 700;
     }
-    .form-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .muted { color: #687386; }
-    .error { color: #b42318; }
-    .success { color: #276749; }
-    .status-message { margin: 12px 0; }
-    [hidden] { display: none !important; }
+
+    .muted {
+      color: #687386;
+    }
+
+    .error {
+      color: #b42318;
+    }
+
+    .success {
+      color: #276749;
+    }
+
+    .status-message {
+      margin: 12px 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
     @media(max-width: 700px) {
-      .dashboard-grid { grid-template-columns: 1fr; }
-      .admin-wrap { margin: 22px auto; }
-      .admin-box { padding: 19px; }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-wrap {
+        margin: 22px auto;
+      }
+
+      .admin-box {
+        padding: 19px;
+      }
     }
   </style>
 </head>
+
 <body>
 
 <header class="site-header">
   <div class="container nav-wrap">
-    <a class="logo" href="index.html">M&N <span>Bilverkstad</span></a>
-    <a href="index.html" style="color:white;text-decoration:none">Till hemsidan</a>
+    <a class="logo" href="../index.html">
+      M&N <span>Bilverkstad</span>
+    </a>
+
+    <a href="../index.html"
+       style="color:white;text-decoration:none">
+      Till hemsidan
+    </a>
   </div>
 </header>
 
@@ -97,41 +215,73 @@
 
   <!-- INLOGGNING -->
   <section class="admin-box login-box" id="loginSection">
+
     <p class="eyebrow">ÄGARPORTAL</p>
+
     <h1>Admininloggning</h1>
-    <p class="muted">Logga in för att hantera verkstadens bokningar.</p>
+
+    <p class="muted">
+      Logga in för att hantera verkstadens bokningar och information.
+    </p>
 
     <form id="loginForm">
+
       <label for="email">E-post</label>
-      <input class="admin-input" id="email" type="email"
-             autocomplete="username" required>
+      <input
+        class="admin-input"
+        id="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
 
       <label for="password">Lösenord</label>
-      <input class="admin-input" id="password" type="password"
-             autocomplete="current-password" required>
+      <input
+        class="admin-input"
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
 
-      <button class="button" type="submit">Logga in</button>
+      <button class="button" type="submit" id="loginButton">
+        Logga in
+      </button>
+
     </form>
-    <p id="loginMessage" class="status-message" role="status"></p>
+
+    <p id="loginMessage"
+       class="status-message"
+       role="status"></p>
+
   </section>
+
 
   <!-- ADMINPANEL -->
   <section id="dashboard" hidden>
+
     <div class="admin-box admin-top">
+
       <div>
         <p class="eyebrow">ÄGARPORTAL</p>
         <h1>Adminpanel</h1>
         <p class="muted">M&N Bilverkstad</p>
       </div>
-      <button class="button" id="logoutButton">Logga ut</button>
+
+      <button class="button" id="logoutButton">
+        Logga ut
+      </button>
+
     </div>
 
-    <!-- TRE HUVUDDELAR -->
+
+    <!-- ÖVERSIKT -->
     <div class="dashboard-grid">
+
       <button class="dashboard-card active" data-tab="previous">
-        <span class="card-label">Förra bokningar</span>
+        <span class="card-label">Tidigare bokningar</span>
         <span class="number" id="previousCount">0</span>
-        <span class="card-description">Tidigare bokningar</span>
+        <span class="card-description">Bokningar före idag</span>
       </button>
 
       <button class="dashboard-card" data-tab="today">
@@ -143,97 +293,196 @@
       <button class="dashboard-card" data-tab="inform">
         <span class="card-label">Informera</span>
         <span class="number">+</span>
-        <span class="card-description">Skapa och hantera information</span>
+        <span class="card-description">Publicera information på hemsidan</span>
       </button>
+
     </div>
 
-    <!-- FÖRRA BOKNINGAR -->
-    <section class="admin-box panel-section active" id="previousPanel">
+
+    <!-- TIDIGARE BOKNINGAR -->
+    <section class="admin-box panel-section active"
+             id="previousPanel">
+
       <div class="section-top">
-        <h2>Förra bokningar</h2>
-        <button class="secondary-button" id="refreshPrevious">Uppdatera</button>
+        <h2>Tidigare bokningar</h2>
+
+        <button class="secondary-button" id="refreshPrevious">
+          Uppdatera
+        </button>
       </div>
-      <p class="muted">Bokningar med ett önskat datum före idag.</p>
-      <p id="previousMessage" class="status-message" role="status"></p>
+
+      <p class="muted">
+        Bokningar med önskat datum före idag.
+      </p>
+
+      <p id="previousMessage"
+         class="status-message"
+         role="status"></p>
+
       <div id="previousList"></div>
+
     </section>
+
 
     <!-- DAGENS BOKNINGAR -->
     <section class="admin-box panel-section" id="todayPanel">
+
       <div class="section-top">
         <h2>Dagens bokningar</h2>
-        <button class="secondary-button" id="refreshToday">Uppdatera</button>
+
+        <button class="secondary-button" id="refreshToday">
+          Uppdatera
+        </button>
       </div>
-      <p class="muted">Bokningar med dagens önskade datum.</p>
-      <p id="todayMessage" class="status-message" role="status"></p>
+
+      <p class="muted">
+        Bokningar med dagens önskade datum.
+      </p>
+
+      <p id="todayMessage"
+         class="status-message"
+         role="status"></p>
+
       <div id="todayList"></div>
+
     </section>
 
-    <!-- INFORMERA -->
+
+    <!-- INFORMATION -->
     <section class="admin-box panel-section" id="informPanel">
+
       <div class="section-top">
+
         <div>
           <h2>Informera</h2>
-          <p class="muted">Meddelanden till hemsidans besökare.</p>
+          <p class="muted">
+            Meddelanden till hemsidans besökare.
+          </p>
         </div>
-        <button class="plus-button" id="addNoticeButton"
-                aria-label="Skapa nytt meddelande">+</button>
+
+        <button
+          class="plus-button"
+          id="addNoticeButton"
+          aria-label="Skapa nytt meddelande"
+          type="button">
+          +
+        </button>
+
       </div>
 
+
+      <!-- SKAPA / REDIGERA INFORMATION -->
       <form id="noticeForm" hidden>
-        <h3 id="noticeFormTitle">Skapa information</h3>
+
+        <h3 id="noticeFormTitle">
+          Skapa information
+        </h3>
 
         <label for="noticeTitle">Rubrik *</label>
-        <input class="admin-input" id="noticeTitle"
-               maxlength="100" required
-               placeholder="Ex. Biltvätt tillfälligt avstängd">
+
+        <input
+          class="admin-input"
+          id="noticeTitle"
+          maxlength="100"
+          required
+          placeholder="Ex. Viktig information"
+        >
 
         <label for="noticeBody">Meddelande *</label>
-        <textarea class="admin-textarea" id="noticeBody"
-                  maxlength="2000" required
-                  placeholder="Skriv informationen här..."></textarea>
 
-        <label for="noticeExpiry">Visa till och med (valfritt)</label>
-        <input class="admin-input" id="noticeExpiry" type="date">
+        <textarea
+          class="admin-textarea"
+          id="noticeBody"
+          maxlength="2000"
+          required
+          placeholder="Skriv informationen här...">
+        </textarea>
+
+        <label for="noticeExpiry">
+          Visa till och med (valfritt)
+        </label>
+
+        <input
+          class="admin-input"
+          id="noticeExpiry"
+          type="date"
+        >
 
         <p class="muted">
-          När datumet har passerat döljs meddelandet automatiskt
-          från den publika hemsidan. Lämna tomt om det ska visas
-          tills du tar bort det manuellt.
+          När datumet har passerat döljs meddelandet från hemsidan.
+          Lämna tomt om det ska visas tills du tar bort det manuellt.
         </p>
 
         <div class="form-actions">
-          <button class="button" type="submit" id="saveNoticeButton">
+
+          <button
+            class="button"
+            type="submit"
+            id="saveNoticeButton">
             Publicera information
           </button>
-          <button class="secondary-button" type="button" id="cancelNoticeButton">
+
+          <button
+            class="secondary-button"
+            type="button"
+            id="cancelNoticeButton">
             Avbryt
           </button>
+
         </div>
-        <p id="noticeFormMessage" class="status-message" role="status"></p>
+
+        <p id="noticeFormMessage"
+           class="status-message"
+           role="status"></p>
+
       </form>
 
+
+      <!-- PUBLICERADE MEDDELANDEN -->
       <div style="margin-top:25px">
+
         <h3>Publicerade meddelanden</h3>
-        <p id="noticeMessage" class="status-message" role="status"></p>
+
+        <p id="noticeMessage"
+           class="status-message"
+           role="status"></p>
+
         <div id="noticeList"></div>
+
       </div>
+
     </section>
+
   </section>
+
 </main>
 
+
 <script>
-  // Lägg in Supabase Project URL och Publishable key här.
-  const SUPABASE_URL = "DIN_SUPABASE_PROJECT_URL";
-  const SUPABASE_ANON_KEY = "DIN_SUPABASE_PUBLISHABLE_KEY";
+  // ======================================
+  // SUPABASE INSTÄLLNINGAR
+  // ======================================
+
+  const SUPABASE_URL =
+    "https://cxjbgazjgzjzliipbmft.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "DIN_SUPABASE_PUBLISHABLE_KEY";
 
   const client = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
   );
 
+
+  // ======================================
+  // GEMENSAMMA FUNKTIONER
+  // ======================================
+
   const $ = (id) => document.getElementById(id);
+
   let editingNoticeId = null;
+
 
   function todayInStockholm() {
     return new Intl.DateTimeFormat("sv-SE", {
@@ -244,23 +493,39 @@
     }).format(new Date());
   }
 
-  function showMessage(element, text, type = "") {
-    element.textContent = text;
+
+  function showMessage(element, message, type = "") {
+    element.textContent = message;
     element.className = "status-message " + type;
   }
 
+
   function addField(parent, label, value) {
     const p = document.createElement("p");
+
     const strong = document.createElement("strong");
     strong.textContent = label + ": ";
-    p.append(strong, document.createTextNode(value || "Ej angivet"));
+
+    p.append(
+      strong,
+      document.createTextNode(value || "Ej angivet")
+    );
+
     parent.appendChild(p);
   }
 
-  // BYT MELLAN DE TRE DELARNA
+
+  // ======================================
+  // BYT MELLAN PANELERNA
+  // ======================================
+
   function showTab(tab) {
+
     document.querySelectorAll(".dashboard-card").forEach((card) => {
-      card.classList.toggle("active", card.dataset.tab === tab);
+      card.classList.toggle(
+        "active",
+        card.dataset.tab === tab
+      );
     });
 
     document.querySelectorAll(".panel-section").forEach((panel) => {
@@ -269,16 +534,29 @@
 
     $(tab + "Panel").classList.add("active");
 
-    if (tab === "inform") loadNotices();
-    if (tab === "today" || tab === "previous") loadBookings();
+    if (tab === "inform") {
+      loadNotices();
+    }
+
+    if (tab === "today" || tab === "previous") {
+      loadBookings();
+    }
   }
 
+
   document.querySelectorAll(".dashboard-card").forEach((card) => {
-    card.addEventListener("click", () => showTab(card.dataset.tab));
+    card.addEventListener("click", () => {
+      showTab(card.dataset.tab);
+    });
   });
 
+
+  // ======================================
   // KONTROLLERA ADMINBEHÖRIGHET
+  // ======================================
+
   async function checkAdmin(user) {
+
     const { data, error } = await client
       .from("admin_users")
       .select("user_id")
@@ -286,49 +564,107 @@
       .maybeSingle();
 
     if (error || !data) {
+
       await client.auth.signOut();
+
       $("dashboard").hidden = true;
       $("loginSection").hidden = false;
-      showMessage($("loginMessage"), "Du har inte behörighet till adminpanelen.", "error");
-      return;
+
+      showMessage(
+        $("loginMessage"),
+        "Du har inte behörighet till adminpanelen.",
+        "error"
+      );
+
+      return false;
     }
 
     $("loginSection").hidden = true;
     $("dashboard").hidden = false;
+
     await loadBookings();
+
+    return true;
   }
 
+
+  // ======================================
   // LOGGA IN
+  // ======================================
+
   $("loginForm").addEventListener("submit", async (event) => {
+
     event.preventDefault();
-    showMessage($("loginMessage"), "Loggar in...");
+
+    const loginButton = $("loginButton");
+
+    loginButton.disabled = true;
+
+    showMessage(
+      $("loginMessage"),
+      "Kontrollerar inloggningen..."
+    );
 
     const { data, error } = await client.auth.signInWithPassword({
       email: $("email").value.trim(),
       password: $("password").value
     });
 
+    loginButton.disabled = false;
+
     if (error) {
-      showMessage($("loginMessage"), "Inloggningen misslyckades. Kontrollera uppgifterna.", "error");
+
+      showMessage(
+        $("loginMessage"),
+        "Inloggningen misslyckades. Kontrollera uppgifterna.",
+        "error"
+      );
+
       return;
     }
 
     await checkAdmin(data.user);
+
   });
 
+
+  // ======================================
   // LOGGA UT
+  // ======================================
+
   $("logoutButton").addEventListener("click", async () => {
+
     await client.auth.signOut();
+
     $("dashboard").hidden = true;
     $("loginSection").hidden = false;
+
     $("loginForm").reset();
-    showMessage($("loginMessage"), "Du har loggat ut.", "success");
+
+    showMessage(
+      $("loginMessage"),
+      "Du har loggat ut.",
+      "success"
+    );
+
   });
 
-  // HÄMTA OCH VISA BOKNINGAR
+
+  // ======================================
+  // HÄMTA BOKNINGAR
+  // ======================================
+
   async function loadBookings() {
-    showMessage($("previousMessage"), "Hämtar bokningar...");
-    showMessage($("todayMessage"), "Hämtar bokningar...");
+
+    showMessage(
+      $("previousMessage"),
+      "Hämtar bokningar..."
+    );
+
+    showMessage(
+      $("todayMessage"),
+      "Hämtar bokningar..."
+    );
 
     const { data, error } = await client
       .from("bookings")
@@ -336,45 +672,85 @@
       .order("preferred_date", { ascending: false });
 
     if (error) {
-      showMessage($("previousMessage"), "Kunde inte hämta bokningar.", "error");
-      showMessage($("todayMessage"), "Kunde inte hämta bokningar.", "error");
+
+      console.error(error);
+
+      showMessage(
+        $("previousMessage"),
+        "Kunde inte hämta bokningar. Kontrollera databasinställningarna.",
+        "error"
+      );
+
+      showMessage(
+        $("todayMessage"),
+        "Kunde inte hämta bokningar. Kontrollera databasinställningarna.",
+        "error"
+      );
+
       return;
     }
 
     const bookings = data || [];
     const today = todayInStockholm();
 
-    const previous = bookings.filter(
-      (booking) => booking.preferred_date && booking.preferred_date < today
+    const previous = bookings.filter((booking) =>
+      booking.preferred_date &&
+      booking.preferred_date < today
     );
 
-    const todays = bookings.filter(
-      (booking) => booking.preferred_date === today
+    const todays = bookings.filter((booking) =>
+      booking.preferred_date === today
     );
 
     $("previousCount").textContent = previous.length;
     $("todayCount").textContent = todays.length;
 
-    renderBookings(previous, $("previousList"), $("previousMessage"));
-    renderBookings(todays, $("todayList"), $("todayMessage"));
+    renderBookings(
+      previous,
+      $("previousList"),
+      $("previousMessage")
+    );
+
+    renderBookings(
+      todays,
+      $("todayList"),
+      $("todayMessage")
+    );
+
   }
 
+
+  // ======================================
+  // VISA BOKNINGAR
+  // ======================================
+
   function renderBookings(bookings, container, statusElement) {
+
     container.replaceChildren();
 
     if (bookings.length === 0) {
-      showMessage(statusElement, "Inga bokningar här just nu.");
+
+      showMessage(
+        statusElement,
+        "Inga bokningar här just nu."
+      );
+
       return;
     }
 
-    showMessage(statusElement, bookings.length + " bokningar hittades.");
+    showMessage(
+      statusElement,
+      bookings.length + " bokningar hittades."
+    );
 
     bookings.forEach((booking) => {
+
       const card = document.createElement("article");
       card.className = "booking-item";
 
       const heading = document.createElement("h3");
       heading.textContent = booking.name || "Bokning";
+
       card.appendChild(heading);
 
       addField(card, "Telefon", booking.phone);
@@ -386,32 +762,56 @@
       addField(card, "Status", booking.status);
 
       container.appendChild(card);
+
     });
+
   }
+
 
   $("refreshPrevious").addEventListener("click", loadBookings);
   $("refreshToday").addEventListener("click", loadBookings);
 
-  // INFORMATIONSFORMULÄR
+
+  // ======================================
+  // INFORMATION – FORMULÄR
+  // ======================================
+
   function resetNoticeForm() {
+
     editingNoticeId = null;
+
     $("noticeForm").reset();
     $("noticeForm").hidden = true;
+
     $("noticeFormTitle").textContent = "Skapa information";
-    $("saveNoticeButton").textContent = "Publicera information";
+
+    $("saveNoticeButton").textContent =
+      "Publicera information";
+
     showMessage($("noticeFormMessage"), "");
+
   }
 
+
   $("addNoticeButton").addEventListener("click", () => {
+
     resetNoticeForm();
+
     $("noticeForm").hidden = false;
     $("noticeTitle").focus();
+
   });
+
 
   $("cancelNoticeButton").addEventListener("click", resetNoticeForm);
 
+
+  // ======================================
   // SPARA ELLER REDIGERA INFORMATION
+  // ======================================
+
   $("noticeForm").addEventListener("submit", async (event) => {
+
     event.preventDefault();
 
     const title = $("noticeTitle").value.trim();
@@ -419,53 +819,92 @@
     const expiry = $("noticeExpiry").value || null;
 
     if (!title || !body) {
-      showMessage($("noticeFormMessage"), "Fyll i både rubrik och meddelande.", "error");
+
+      showMessage(
+        $("noticeFormMessage"),
+        "Fyll i både rubrik och meddelande.",
+        "error"
+      );
+
       return;
     }
 
     if (expiry && expiry < todayInStockholm()) {
-      showMessage($("noticeFormMessage"), "Välj dagens datum eller ett datum framåt.", "error");
+
+      showMessage(
+        $("noticeFormMessage"),
+        "Välj dagens datum eller ett datum framåt.",
+        "error"
+      );
+
       return;
     }
 
     $("saveNoticeButton").disabled = true;
-    showMessage($("noticeFormMessage"), "Sparar...");
+
+    showMessage(
+      $("noticeFormMessage"),
+      "Sparar..."
+    );
 
     let result;
 
-    if (editingNoticeId) {
+    if (editingNoticeId !== null) {
+
       result = await client
         .from("announcements")
         .update({
-          title,
-          body,
+          title: title,
+          body: body,
           visible_until: expiry
         })
         .eq("id", editingNoticeId);
+
     } else {
+
       result = await client
         .from("announcements")
         .insert({
-          title,
-          body,
+          title: title,
+          body: body,
           visible_until: expiry
         });
+
     }
 
     $("saveNoticeButton").disabled = false;
 
     if (result.error) {
-      showMessage($("noticeFormMessage"), "Kunde inte spara. Kontrollera databasinställningarna.", "error");
+
+      console.error(result.error);
+
+      showMessage(
+        $("noticeFormMessage"),
+        "Kunde inte spara informationen. Kontrollera databasinställningarna.",
+        "error"
+      );
+
       return;
     }
 
     resetNoticeForm();
+
     await loadNotices();
+
   });
 
+
+  // ======================================
   // HÄMTA INFORMATION
+  // ======================================
+
   async function loadNotices() {
-    showMessage($("noticeMessage"), "Hämtar information...");
+
+    showMessage(
+      $("noticeMessage"),
+      "Hämtar information..."
+    );
+
     $("noticeList").replaceChildren();
 
     const { data, error } = await client
@@ -474,36 +913,47 @@
       .order("created_at", { ascending: false });
 
     if (error) {
-      showMessage($("noticeMessage"), "Kunde inte hämta information.", "error");
+
+      console.error(error);
+
+      showMessage(
+        $("noticeMessage"),
+        "Kunde inte hämta information.",
+        "error"
+      );
+
       return;
     }
 
     const notices = data || [];
 
     if (notices.length === 0) {
-      showMessage($("noticeMessage"), "Det finns inga meddelanden ännu.");
+
+      showMessage(
+        $("noticeMessage"),
+        "Det finns inga meddelanden ännu."
+      );
+
       return;
     }
 
-    const today = todayInStockholm();
-    const activeNotices = notices.filter(
-      (notice) => !notice.visible_until || notice.visible_until >= today
-    );
-
     showMessage(
       $("noticeMessage"),
-      activeNotices.length + " aktiva meddelanden."
+      notices.length + " meddelanden hittades."
     );
 
-    activeNotices.forEach((notice) => {
+    notices.forEach((notice) => {
+
       const card = document.createElement("article");
       card.className = "notice-item";
 
       const heading = document.createElement("h3");
       heading.textContent = notice.title;
+
       card.appendChild(heading);
 
       addField(card, "Meddelande", notice.body);
+
       addField(
         card,
         "Visas till och med",
@@ -513,29 +963,49 @@
       const actions = document.createElement("div");
       actions.className = "notice-actions";
 
+
+      // REDIGERA
       const editButton = document.createElement("button");
+
       editButton.className = "secondary-button";
       editButton.type = "button";
       editButton.textContent = "Redigera";
 
       editButton.addEventListener("click", () => {
+
         editingNoticeId = notice.id;
+
         $("noticeTitle").value = notice.title;
         $("noticeBody").value = notice.body;
         $("noticeExpiry").value = notice.visible_until || "";
-        $("noticeFormTitle").textContent = "Redigera information";
-        $("saveNoticeButton").textContent = "Spara ändringar";
+
+        $("noticeFormTitle").textContent =
+          "Redigera information";
+
+        $("saveNoticeButton").textContent =
+          "Spara ändringar";
+
         $("noticeForm").hidden = false;
-        $("noticeForm").scrollIntoView({ behavior: "smooth" });
+
+        $("noticeForm").scrollIntoView({
+          behavior: "smooth"
+        });
+
       });
 
+
+      // RADERA
       const deleteButton = document.createElement("button");
+
       deleteButton.className = "delete-button";
       deleteButton.type = "button";
       deleteButton.textContent = "Radera";
 
       deleteButton.addEventListener("click", async () => {
-        if (!confirm("Vill du verkligen radera detta meddelande?")) return;
+
+        if (!confirm("Vill du verkligen radera detta meddelande?")) {
+          return;
+        }
 
         deleteButton.disabled = true;
 
@@ -545,29 +1015,59 @@
           .eq("id", notice.id);
 
         if (error) {
+
+          console.error(error);
+
           deleteButton.disabled = false;
-          showMessage($("noticeMessage"), "Kunde inte radera meddelandet.", "error");
+
+          showMessage(
+            $("noticeMessage"),
+            "Kunde inte radera meddelandet.",
+            "error"
+          );
+
           return;
         }
 
         await loadNotices();
+
       });
+
 
       actions.append(editButton, deleteButton);
       card.appendChild(actions);
+
       $("noticeList").appendChild(card);
+
     });
+
   }
 
-  // KONTROLLERA OM ÄGAREN REDAN ÄR INLOGGAD
+
+  // ======================================
+  // KONTROLLERA BEFINTLIG INLOGGNING
+  // ======================================
+
   async function checkExistingSession() {
-    const { data } = await client.auth.getSession();
+
+    const { data, error } = await client.auth.getSession();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
     if (data.session) {
       await checkAdmin(data.session.user);
     }
+
   }
 
+
+  // Starta adminpanelen
   checkExistingSession();
+
 </script>
+
 </body>
 </html>
