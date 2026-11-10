@@ -527,21 +527,6 @@
     loginTab.addEventListener("click", () => setMode("login"));
     registerTab.addEventListener("click", () => setMode("register"));
 
-    async function redirectIfLoggedIn() {
-      const { data, error } = await supabaseClient.auth.getSession();
-
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      if (data.session) {
-        window.location.replace("home.html");
-      }
-    }
-
-    redirectIfLoggedIn();
-
     accountForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       clearMessage();
@@ -599,10 +584,9 @@
           }
 
           // Byt till inloggningsläget först.
-          // setMode() rensar gamla meddelanden.
           setMode("login");
 
-          // Visa sedan verifieringsmeddelandet så att det ligger kvar.
+          // Visa verifieringsmeddelandet efter bytet.
           showMessage(
             "Ditt konto har skapats! Vi har skickat ett verifieringsmejl till " +
             email +
