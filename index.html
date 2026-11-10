@@ -4,108 +4,658 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="M&N Bilverkstad i Bromma – bilservice, reparationer och bilvård.">
-  <title>Hem | M&N Bilverkstad</title>
+  <meta name="theme-color" content="#101820">
+  <title>Logga in eller skapa konto | M&N Bilverkstad</title>
+  <meta name="description" content="Skapa ett konto eller logga in hos M&N Bilverkstad i Bromma för att hantera dina bokningar.">
+
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js" defer></script>
+
+  <style>
+    :root {
+      --account-bg: #101820;
+      --account-card: #18242e;
+      --account-text: #f5f7fa;
+      --account-muted: #aab6c2;
+      --account-accent: #e6a23c;
+      --account-border: rgba(255,255,255,.12);
+    }
+
+    body.account-page {
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(230,162,60,.13), transparent 35%),
+        var(--account-bg);
+      color: var(--account-text);
+      font-family: Arial, sans-serif;
+    }
+
+    .account-header {
+      width: min(1100px, calc(100% - 40px));
+      margin: auto;
+      padding: 25px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .account-logo {
+      color: white;
+      font-size: 22px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .account-logo span {
+      color: var(--account-accent);
+    }
+
+    .back-link {
+      color: var(--account-muted);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      color: white;
+    }
+
+    .account-main {
+      width: min(1100px, calc(100% - 40px));
+      min-height: calc(100vh - 100px);
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      align-items: center;
+      gap: 65px;
+      padding: 35px 0 70px;
+    }
+
+    .account-intro {
+      max-width: 520px;
+    }
+
+    .account-label {
+      display: inline-block;
+      color: var(--account-accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .account-intro h1 {
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.08;
+      margin: 0 0 22px;
+    }
+
+    .account-intro h1 span {
+      color: var(--account-accent);
+    }
+
+    .account-intro p {
+      color: var(--account-muted);
+      font-size: 17px;
+      line-height: 1.8;
+    }
+
+    .account-benefits {
+      display: grid;
+      gap: 17px;
+      margin-top: 35px;
+    }
+
+    .account-benefit {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #e4eaf0;
+      font-size: 14px;
+    }
+
+    .benefit-icon {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border-radius: 10px;
+      background: rgba(230,162,60,.12);
+      color: var(--account-accent);
+    }
+
+    .account-card {
+      background: var(--account-card);
+      border: 1px solid var(--account-border);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+    }
+
+    .account-card h2 {
+      margin: 0 0 8px;
+      font-size: 27px;
+    }
+
+    .account-card > p {
+      margin: 0 0 25px;
+      color: var(--account-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .account-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      padding: 5px;
+      background: rgba(0,0,0,.2);
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .account-tab {
+      border: 0;
+      border-radius: 7px;
+      padding: 12px 8px;
+      background: transparent;
+      color: var(--account-muted);
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .account-tab.active {
+      background: var(--account-accent);
+      color: #171717;
+    }
+
+    .account-form {
+      display: grid;
+      gap: 15px;
+    }
+
+    .account-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .account-field label {
+      color: #e5eaf0;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .account-field input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 14px;
+      border: 1px solid var(--account-border);
+      border-radius: 9px;
+      outline: none;
+      background: #101a22;
+      color: white;
+      font-size: 15px;
+    }
+
+    .account-field input:focus {
+      border-color: var(--account-accent);
+    }
+
+    .account-field input::placeholder {
+      color: #71808d;
+    }
+
+    .account-submit {
+      width: 100%;
+      padding: 15px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--account-accent);
+      color: #171717;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .2s;
+      margin-top: 5px;
+    }
+
+    .account-submit:hover {
+      background: #f0b34e;
+      transform: translateY(-1px);
+    }
+
+    .account-submit:disabled {
+      opacity: .6;
+      cursor: wait;
+      transform: none;
+    }
+
+    .account-message {
+      display: none;
+      padding: 13px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .account-message.show {
+      display: block;
+    }
+
+    .account-message.success {
+      background: rgba(40,180,100,.12);
+      border: 1px solid rgba(40,180,100,.3);
+      color: #8ce0ad;
+    }
+
+    .account-message.error {
+      background: rgba(230,70,70,.12);
+      border: 1px solid rgba(230,70,70,.3);
+      color: #ffaaaa;
+    }
+
+    .account-message.info {
+      background: rgba(230,162,60,.12);
+      border: 1px solid rgba(230,162,60,.3);
+      color: #ffd28c;
+    }
+
+    .account-footnote {
+      color: var(--account-muted);
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+      margin: 20px 0 0;
+    }
+
+    .account-footer {
+      text-align: center;
+      color: #71808d;
+      font-size: 12px;
+      padding: 20px;
+    }
+
+    @media (max-width: 800px) {
+      .account-main {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        padding-top: 20px;
+      }
+
+      .account-intro {
+        text-align: center;
+        margin: auto;
+      }
+
+      .account-benefits {
+        display: none;
+      }
+
+      .account-card {
+        width: 100%;
+        max-width: 440px;
+        box-sizing: border-box;
+        margin: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .account-header,
+      .account-main {
+        width: calc(100% - 28px);
+      }
+
+      .account-card {
+        padding: 23px 19px;
+      }
+
+      .account-intro h1 {
+        font-size: 37px;
+      }
+    }
+  </style>
 </head>
-<body>
 
-<header class="site-header">
-  <div class="container nav-wrap">
-    <a class="logo" href="index.html">M&N <span>Bilverkstad</span></a>
-    <button class="menu-toggle" aria-label="Öppna meny" aria-expanded="false">☰</button>
-    <nav class="main-nav">
-      <a class="active" href="index.html">Hem</a>
-      <a href="about.html">Om oss</a>
-      <a href="services.html">Tjänster</a>
-      <a href="work.html">Vårt arbete</a>
-      <a href="contact.html">Kontakt</a>
-      <a href="info.html">Information</a>
-      <a class="nav-cta" href="booking.html">Boka tid</a>
-    </nav>
-  </div>
-</header>
+<body class="account-page">
 
-<main>
+  <header class="account-header">
+    <a href="index.html" class="account-logo">
+      M&N <span>BILVERKSTAD</span>
+    </a>
 
-  <section class="hero">
-    <div class="container hero-content">
-      <p class="eyebrow">BILVERKSTAD I BROMMA</p>
-      <h1>Vi tar hand om<br>din bil.</h1>
-      <p>Pålitlig bilservice, reparationer och bilvård med personlig service.</p>
-      <div class="hero-actions">
-        <a class="button" href="booking.html">Boka en tid</a>
-        <a class="button button-outline" href="services.html">Se våra tjänster</a>
+    <a href="home.html" class="back-link">Till webbplatsen →</a>
+  </header>
+
+  <main class="account-main">
+
+    <section class="account-intro">
+      <span class="account-label">M&N Bilverkstad · Bromma</span>
+
+      <h1>
+        Välkommen till en enklare
+        <span>bilvardag.</span>
+      </h1>
+
+      <p>
+        Skapa ett konto hos oss och få tillgång till dina bokningar.
+        Du kan enkelt hålla koll på dina tider och hantera dina
+        bokningsförfrågningar.
+      </p>
+
+      <div class="account-benefits">
+        <div class="account-benefit">
+          <span class="benefit-icon">✓</span>
+          Se dina egna bokningar
+        </div>
+
+        <div class="account-benefit">
+          <span class="benefit-icon">✓</span>
+          Boka service online
+        </div>
+
+        <div class="account-benefit">
+          <span class="benefit-icon">✓</span>
+          Samla dina bokningar på ett ställe
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- INFORMATION FRÅN ADMINPANELEN -->
-  <section class="section workshop-information" id="workshopInformation" hidden>
-    <div class="container">
-      <div class="section-heading">
-        <p class="eyebrow">SENASTE NYTT</p>
-        <h2>Information från verkstaden</h2>
-        <p>Här hittar du aktuell information från M&N Bilverkstad.</p>
+    <section class="account-card">
+
+      <h2 id="formTitle">Välkommen!</h2>
+
+      <p id="formDescription">
+        Logga in eller skapa ett konto för att fortsätta.
+      </p>
+
+      <div class="account-tabs">
+        <button type="button" class="account-tab active" id="loginTab">
+          Logga in
+        </button>
+
+        <button type="button" class="account-tab" id="registerTab">
+          Skapa konto
+        </button>
       </div>
 
-      <div id="publicAnnouncementList" class="announcement-list"></div>
-    </div>
-  </section>
+      <div id="accountMessage" class="account-message" role="status" aria-live="polite"></div>
 
-  <section class="section">
-    <div class="container">
-      <div class="section-heading">
-        <p class="eyebrow">VÄLKOMMEN TILL M&N</p>
-        <h2>Service du kan känna dig trygg med</h2>
-        <p>Vi hjälper dig med bilens underhåll och reparationer. Kontakta oss för att prata om vad just din bil behöver.</p>
-      </div>
+      <form id="accountForm" class="account-form">
 
-      <div class="feature-grid">
-        <article class="feature-card">
-          <div class="feature-icon">⚙</div>
-          <h3>Bilreparation</h3>
-          <p>Hjälp med felsökning och reparation av bilen.</p>
-          <a href="services.html">Läs mer →</a>
-        </article>
+        <div class="account-field" id="nameField" hidden>
+          <label for="fullName">För- och efternamn</label>
+          <input
+            type="text"
+            id="fullName"
+            name="fullName"
+            placeholder="Ditt namn"
+            autocomplete="name"
+          >
+        </div>
 
-        <article class="feature-card">
-          <div class="feature-icon">⌁</div>
-          <h3>Service & oljebyte</h3>
-          <p>Regelbunden service och oljebyte för din bil.</p>
-          <a href="services.html">Läs mer →</a>
-        </article>
+        <div class="account-field">
+          <label for="email">E-postadress</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="namn@exempel.se"
+            autocomplete="email"
+            required
+          >
+        </div>
 
-        <article class="feature-card">
-          <div class="feature-icon">✓</div>
-          <h3>Diagnostik</h3>
-          <p>Felkodsavläsning och kontroll vid bilproblem.</p>
-          <a href="services.html">Läs mer →</a>
-        </article>
-      </div>
-    </div>
-  </section>
+        <div class="account-field">
+          <label for="password">Lösenord</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Minst 8 tecken"
+            minlength="8"
+            autocomplete="current-password"
+            required
+          >
+        </div>
 
-  <section class="cta-band">
-    <div class="container cta-content">
-      <div>
-        <p class="eyebrow">BEHÖVER DIN BIL HJÄLP?</p>
-        <h2>Vi hjälper dig gärna.</h2>
-      </div>
-      <a class="button" href="booking.html">Boka tid</a>
-    </div>
-  </section>
+        <div class="account-field" id="confirmPasswordField" hidden>
+          <label for="confirmPassword">Bekräfta lösenord</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            placeholder="Skriv lösenordet igen"
+            minlength="8"
+            autocomplete="new-password"
+          >
+        </div>
 
-</main>
+        <button type="submit" class="account-submit" id="submitButton">
+          Logga in
+        </button>
 
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>© <span class="year"></span> M&N Bilverkstad</p>
-    <p>Bromma, Stockholm</p>
-  </div>
-</footer>
+      </form>
+
+      <p class="account-footnote">
+        Dina personuppgifter används för att hantera ditt konto och
+        dina bokningar hos M&N Bilverkstad.
+      </p>
+
+    </section>
+
+  </main>
+
+  <footer class="account-footer">
+    © <span id="currentYear"></span> M&N Bilverkstad · Bromma
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    const SUPABASE_URL = "https://cxjbgazjgzjzliipbmft.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_MoJrBn18_9KBNOFS8-B35A__iuhGI31";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+    const accountForm = document.getElementById("accountForm");
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+    const nameField = document.getElementById("nameField");
+    const confirmPasswordField = document.getElementById("confirmPasswordField");
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const submitButton = document.getElementById("submitButton");
+    const messageBox = document.getElementById("accountMessage");
+    const formTitle = document.getElementById("formTitle");
+    const formDescription = document.getElementById("formDescription");
+
+    let currentMode = "login";
+
+    document.getElementById("currentYear").textContent =
+      new Date().getFullYear();
+
+    function showMessage(message, type = "info") {
+      messageBox.textContent = message;
+      messageBox.className = "account-message show " + type;
+    }
+
+    function clearMessage() {
+      messageBox.textContent = "";
+      messageBox.className = "account-message";
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      clearMessage();
+
+      const isRegister = mode === "register";
+
+      loginTab.classList.toggle("active", !isRegister);
+      registerTab.classList.toggle("active", isRegister);
+
+      nameField.hidden = !isRegister;
+      confirmPasswordField.hidden = !isRegister;
+
+      fullNameInput.required = isRegister;
+      confirmPasswordInput.required = isRegister;
+
+      passwordInput.autocomplete = isRegister
+        ? "new-password"
+        : "current-password";
+
+      formTitle.textContent = isRegister
+        ? "Skapa ditt konto"
+        : "Välkommen tillbaka!";
+
+      formDescription.textContent = isRegister
+        ? "Fyll i uppgifterna för att registrera dig."
+        : "Logga in för att se och hantera dina bokningar.";
+
+      submitButton.textContent = isRegister
+        ? "Skapa konto"
+        : "Logga in";
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    registerTab.addEventListener("click", () => setMode("register"));
+
+    async function redirectIfLoggedIn() {
+      const { data, error } = await supabaseClient.auth.getSession();
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (data.session) {
+        window.location.replace("home.html");
+      }
+    }
+
+    redirectIfLoggedIn();
+
+    accountForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearMessage();
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const fullName = fullNameInput.value.trim();
+
+      if (currentMode === "register") {
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (!fullName) {
+          showMessage("Fyll i ditt namn.", "error");
+          return;
+        }
+
+        if (password.length < 8) {
+          showMessage("Lösenordet måste vara minst 8 tecken.", "error");
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          showMessage("Lösenorden matchar inte.", "error");
+          return;
+        }
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent =
+        currentMode === "register" ? "Skapar konto..." : "Loggar in...";
+
+      try {
+        if (currentMode === "register") {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                full_name: fullName
+              },
+              emailRedirectTo: window.location.origin + "/home.html"
+            }
+          });
+
+          if (error) throw error;
+
+          if (data.session) {
+            showMessage(
+              "Ditt konto har skapats! Du skickas vidare...",
+              "success"
+            );
+
+            window.location.replace("home.html");
+            return;
+          }
+
+          showMessage(
+            "Ditt konto har skapats! Vi har skickat ett verifieringsmejl till " +
+            email +
+            ". Öppna mejlet och bekräfta din e-postadress innan du loggar in.",
+            "success"
+          );
+
+          setMode("login");
+          return;
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) throw error;
+
+        if (!data.user.email_confirmed_at) {
+          await supabaseClient.auth.signOut();
+
+          showMessage(
+            "Du måste först verifiera din e-postadress via mejlet vi skickade till dig.",
+            "error"
+          );
+          return;
+        }
+
+        showMessage("Inloggningen lyckades! Du skickas vidare...", "success");
+
+        window.location.replace("home.html");
+
+      } catch (error) {
+        console.error("Kontofel:", error);
+
+        let message = "Något gick fel. Försök igen.";
+
+        if (error.message.includes("Invalid login credentials")) {
+          message = "Fel e-postadress eller lösenord.";
+        } else if (error.message.includes("User already registered")) {
+          message = "Det finns redan ett konto med den e-postadressen. Logga in istället.";
+        } else if (error.message.toLowerCase().includes("password")) {
+          message = "Kontrollera att lösenordet uppfyller kraven.";
+        } else if (error.message.toLowerCase().includes("email")) {
+          message = "Kontrollera e-postadressen och försök igen.";
+        } else if (error.message) {
+          message = error.message;
+        }
+
+        showMessage(message, "error");
+
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent =
+          currentMode === "register" ? "Skapa konto" : "Logga in";
+      }
+    });
+  </script>
 
 </body>
 </html>
