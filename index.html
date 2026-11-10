@@ -598,6 +598,11 @@
             return;
           }
 
+          // Byt till inloggningsläget först.
+          // setMode() rensar gamla meddelanden.
+          setMode("login");
+
+          // Visa sedan verifieringsmeddelandet så att det ligger kvar.
           showMessage(
             "Ditt konto har skapats! Vi har skickat ett verifieringsmejl till " +
             email +
@@ -605,7 +610,6 @@
             "success"
           );
 
-          setMode("login");
           return;
         }
 
